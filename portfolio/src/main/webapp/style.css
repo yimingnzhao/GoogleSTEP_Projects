@@ -6,11 +6,55 @@ body {
     margin: 0;
 }
 
+h1 {
+    text-align: center;
+    font-family: "Comic Sans MS", cursive, sans-serif;
+    color: #33CCFF;
+    font-size: 40px;
+}
+
+h2 {
+    text-align: left;
+    font-family: "Comic Sans MS", cursive, sans-serif;
+    color: #33CCFF;
+    font-size:30px;
+}
+
+img {
+    height: 10%;
+    width: 100%;
+    object-fit: contain;
+}
+
+#about-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.about-item {
+    flex-basis: 100%;
+    align-self: flex-start;
+}
+
+.justified-text {
+    text-align: justify;
+}
+
+
+#slideshow {
+    position: relative;
+}
+
+#slideshow > div {
+    position: absolute; 
+}
 
 #greeting-container {
   margin-top: 20px;
 }
 
+
+/*Begin styles for vertical navigation bar*/
 .sidebar {
   margin: 0;
   padding: 0;
@@ -29,7 +73,7 @@ body {
 }
  
 .sidebar a.active {
-  background-color: #4CAF50;
+  background-color: #33CCFF;
   color: white;
 }
 
@@ -60,3 +104,4 @@ div#content {
     float: none;
   }
 }
+/*End styles for vertical navigation bar*/
