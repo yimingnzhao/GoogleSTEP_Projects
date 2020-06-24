@@ -54,7 +54,6 @@ img {
   margin-top: 20px;
 }
 
-
 /*Begin styles for vertical navigation bar*/
 .sidebar {
   margin: 0;
@@ -166,3 +165,17 @@ div#nav-content {
   }
 }
 /* End box design for work and projects */
+
+#icons-div {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.clickable-icon {
+    width: 32px;
+    height: 32px;
+}
+
+.clickable-icon:hover {
+    opacity: 50%;
+}
