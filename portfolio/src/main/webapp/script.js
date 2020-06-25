@@ -180,13 +180,17 @@ function startTypewriterAnimation() {
         $('#modal-div').css('display', 'block');
     });
 
+    // Option to close modal for when the close button is clicked
     $('.close').click(function() {
         $('#modal-div').css('display', 'none');
     });
+    
+    // Option to close modal for when anywhere outside the modal is clicked
     $(window).click(function(event) {
-        console.log(event.target);
+        // Must check if the modal is open before closing the modal
         if (event.target ==  document.getElementById('modal-div')) {
             $('#modal-div').css('display', 'none');
         }
     });
+    
  });
