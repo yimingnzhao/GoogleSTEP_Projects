@@ -210,6 +210,10 @@ div#nav-content {
     display: none;
 }
 
+.modal-text-tech {
+    display: none;
+}
+
 .modal {
     display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
