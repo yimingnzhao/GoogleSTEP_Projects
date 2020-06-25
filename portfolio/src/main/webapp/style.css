@@ -21,6 +21,18 @@ h2 {
     font-size:30px;
 }
 
+.typewriter {
+    font-family: 'Raleway', sans-serif;
+    padding-top: 1em;
+    padding-bottom: 3.5em;
+    padding-right: 2em;
+    padding-left: 2em; 
+    font-size: 3.5em;
+    font-weight: 200;
+    margin: 0.4em 0;
+    text-align: center;
+}
+
 img {
     height: 100%;
     width: 100%;
@@ -40,7 +52,6 @@ img {
 .justified-text {
     text-align: justify;
 }
-
 
 #slideshow {
     position: relative;
