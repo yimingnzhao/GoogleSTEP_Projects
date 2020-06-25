@@ -172,11 +172,11 @@ function startTypewriterAnimation() {
     $('.modal-btn').click(function() {
         // Gets the text to insert into the modal from HTML
         var headerText = $(this).find('.modal-text-header').text();
-        var bodyText = $(this).find('.modal-text').text();
+        var bodyText = $(this).find('.modal-text').html();
         var techText = $(this).find('.modal-text-tech').text();
         // Inserts text to fields in the modal
         $('#modal-header-display').text(headerText);
-        $('#modal-text-display').text(bodyText);
+        $('#modal-text-display').html(bodyText);
         // Inserts a list of technologies if applicable 
         if (techText) {
             $('#modal-tech-list').html('<b>Technologies:</b>' + techText);
