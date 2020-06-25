@@ -39,6 +39,10 @@ img {
     object-fit: contain;
 }
 
+img.modal-btn {
+    border: thin solid black;
+}
+
 #about-container {
     display: flex;
     justify-content: space-between;
