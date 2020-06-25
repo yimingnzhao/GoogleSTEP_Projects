@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Map of pairs of strings for the typewriter text
 const TYPEWRITER_TEXT = new Map([
     ['electrical engineers,', 'a computer scientist'],
     ['computer scientists,', 'an electrical engineer'],
@@ -139,9 +140,9 @@ function startTypewriterAnimation() {
     }
 
     // Inject CSS to create animated cursor 
-    var css = document.createElement("style");
-    css.type = "text/css";
-    css.innerHTML = ".txt-rotate > .wrap { border-right: 0.08em solid #666 }";
+    var css = document.createElement('style');
+    css.type = 'text/css';
+    css.innerHTML = '.txt-rotate > .wrap { border-right: 0.08em solid #666 }';
     document.body.appendChild(css);
 }
 
@@ -152,7 +153,7 @@ function startTypewriterAnimation() {
  $(document).ready(function() {
 
      // Animates the picture slideshow
-     $("#slideshow > div:gt(0)").hide();
+     $('#slideshow > div:gt(0)').hide();
      setInterval(function() {
          $('#slideshow > div:first')
          .fadeOut(1000)
@@ -162,18 +163,30 @@ function startTypewriterAnimation() {
          .appendTo('#slideshow');
      }, 3000);
 
-     window.onload = function() {
+    // Animates the typing animation
+    window.onload = function() {
+        startTypewriterAnimation();
+    };
 
-     }
+    // Opens modal for extra descriptions for of work and projects
+    $('.modal-btn').click(function() {
+        // Gets the text to insert into the modal from HTML
+        var headerText = $(this).find('.modal-text-header').text();
+        var bodyText = $(this).find('.modal-text').text();
+        // Inserts text to fields in the modal
+        $('#modal-header-display').text(headerText);
+        $('#modal-text-display').text(bodyText);
+        // Displays the modal
+        $('#modal-div').css('display', 'block');
+    });
 
-
-window.onload = function() {
-    var animateLine1 = true;
-    var animateLine2 = false;
-    startTypewriterAnimation();
-};
-
-
-
-
+    $('.close').click(function() {
+        $('#modal-div').css('display', 'none');
+    });
+    $(window).click(function(event) {
+        console.log(event.target);
+        if (event.target ==  document.getElementById('modal-div')) {
+            $('#modal-div').css('display', 'none');
+        }
+    });
  });
