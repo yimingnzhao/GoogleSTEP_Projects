@@ -270,9 +270,16 @@ div#nav-content {
 
 .modal-header {
     padding: 2px 16px;
-    background-color: #5cb85c;
+    background-color: #33CCFF;
     color: white;
 }
 
 .modal-body {padding: 2px 16px;}
+
+#modal-header-display {
+    color: white;
+    font-family: "Times New Roman", Times, serif;
+    margin-block-start: 0.5em;
+    margin-block-end: 0.25em;
+}
 /* End modal content */

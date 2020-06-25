@@ -177,6 +177,7 @@ function startTypewriterAnimation() {
         // Inserts text to fields in the modal
         $('#modal-header-display').text(headerText);
         $('#modal-text-display').text(bodyText);
+        // Inserts a list of technologies if applicable 
         if (techText) {
             $('#modal-tech-list').html('<b>Technologies:</b>' + techText);
             $('#modal-tech-list').css('display', 'block');
