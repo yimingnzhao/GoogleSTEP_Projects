@@ -20,13 +20,34 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import java.util.*;
+
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
-  @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    response.setContentType("text/html;");
-    response.getWriter().println("<b>Hello Nathan!</b>");
-  }
+    private List<String> pokemon;
+
+    @Override
+    public void init() {
+        pokemon = Arrays.asList(new String[]{"bulbasaur", "charmander", "squirtle"});
+    }
+
+    @Override
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String json = convertToJson();
+        response.setContentType("application/json;");
+        response.getWriter().println(json);
+    }
+
+    private String convertToJson() {
+        String json = "{";
+        json += "\"array\": [";
+        for (int i = 0; i < this.pokemon.size(); i++) {
+            json += "\"" + this.pokemon.get(i) + "\",";
+        } 
+        json = json.substring(0, json.length() - 1);
+        json += "]}";
+        return json;
+    }
 }

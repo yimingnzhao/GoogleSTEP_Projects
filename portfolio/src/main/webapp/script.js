@@ -203,8 +203,13 @@ function startTypewriterAnimation() {
 
     // Fetch data from server from tutorial
     $('#server-fetch').find('button').click(function() {
-        fetch('/data').then((response) => response.text()).then((text) => {
-            $('#server-fetch').find('p').html(text);
+        fetch('/data').then((response) => response.json()).then((json) => {
+            var display = '<ul>';
+            for (var i = 0; i < json.array.length; i++) {
+                display += '<li>' + json.array[i] + '</li>';
+            }
+            display += '</ul>';
+            $('#server-fetch').find('p').html(display);
         });
     });
     
