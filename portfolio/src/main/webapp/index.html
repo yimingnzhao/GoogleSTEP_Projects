@@ -4,15 +4,233 @@
     <meta charset="UTF-8">
     <title>My Portfolio</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="script.js"></script>
   </head>
+
+
   <body>
-    <div id="content">
-      <h1>My Portfolio</h1>
-      <p>This is my portfolio.</p>
+    <div class="sidebar">
+        <a class="active" href="#">Home</a>
+        <a href="#about">About Me</a>
+        <a href="#work">Work </a>        
+        <a href="#projects">Projects</a>
+        <a href="#contact">Contact</a>
+    </div>
+
+    <div id="nav-content">
+      <h1>Hello, I'm Nathan!</h1>
+      <img src="/images/slideshow_3.png" alt="Pikachu">
       <p>Click here to get a random message:</p>
       <button onclick="addRandomGreeting()">Hello</button>
       <div id="greeting-container"></div>
+      
+      <div id="about">
+        <h2>About Me</h2>
+        <div id="about-container">
+            <div class="about-item">
+                <p class="justified-text">
+                    I'm Nathan! I was the kid that always wanted to explore something new, like trying to make plasma
+                    by microwaving a grape. Now, instead of breaking microwaves, I'm striving to create without the 
+                    destructive side effects. When the time came for college, I ended up chosing to study computer 
+                    engineering, where most of my accidental unwanted side effects could be fixed with a 'Ctrl+C' or 
+                    a 'git revert', but where I still have the opportunity to make objects light up, process outputs
+                    of ultrasonic sensors, and just interact with the physical world with the things I build (even if
+                    a few LEDs or resistors are sacrificed in the process). In my spare time, I enjoy reading scary 
+                    stories, pondering different philosophical schools of thought to discover more about myself, and 
+                    collecting Pokemon in hopes that I one day will complete the Pokedex, even if The Pokemon Company
+                    designs more and more Pokemon every few years. 
+                </p>
+            </div>
+            <div class="about-item">
+                <div id="slideshow">
+                    <div><img src="/images/slideshow_1.png"></div>
+                    <div><img src="/images/slideshow_2.png"></div>
+                    <div><img src="/images/slideshow_3.png"></div> 
+                </div>
+            </div>
+        </div>
+      </div>
+
+      <br>
+      <br>
+      <br>
+      <br>
+      <br>
+      <br>
+      <hr>
+
+      <div id="work"<p>
+        <h2>Work</h2>
+
+        <div class="main">
+            <div class="content">
+                <img src="/images/ucsd_pano.jpg" alt="UCSD Panorama">
+                <h3>UCSD Triton</h3>
+                <p class="justified-text">
+                    I am currently a student at UC San Diego, majoring in Computer Engineering. In the field of 
+                    computer science, I have taken classes on topics such as Software Engineering, Data Structures,
+                    and Algorithm Analysis. Moreover, I have taken courses in the field of electrical engineering, 
+                    such as Analog Design and Linear Systems. 
+                </p>
+            </div>
+
+            <!-- Portfolio Gallery Grid -->
+            <div class="row">
+                <div class="column">
+                    <div class="content">
+                        <img src="/images/step.jpg" alt="Google STEP Logo">
+                        <h3>Google STEP</h3>
+                        <h5>June 2020 - Present</h5>
+                        <p>
+                            Hey, that's right now!
+                        </p>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="content">
+                        <img src="/images/tse.png" alt="Triton Software Engineering">
+                        <h3>UCSD: TSE</h3>
+                        <h5>Sept. 2018 - Present</h5>
+                        <p>
+                            Developer for the Triton Software Engineering club
+                        </p> 
+                        <p>
+                            Works on technical solutions for non-profits
+                        <!--
+                            The mission of TSE is 
+                            to provide non-profits with technical solutions. I have personally been on the UCSD
+                            Innovation team, that helped develop the interactive Innovation Portal, and the 
+                            Internaltional Health Collective team, where I contributed to patient data organization
+                            and unit conversion of numerical data for a tablet application that will be used by
+                            medical professionals in Tijuana. -->   
+                        </p>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="content">
+                        <img src="/images/ece.png" alt="Jacobs School of Engineering">
+                        <h3>ECE Researcher</h3>
+                        <h5>June 2019 - Sept. 2019</h5>
+                        <p>
+                            Measured correctness of an error detection tool for MSA data
+                            <!--
+                            I worked under the guidance of Dr. Siavash Mirarab on measuring the correctness of an
+                            error detection tool for multiple sequence alignments of phylogenetic data. Over the 
+                            course of my research, I introduced specified errors to correct datasets to determine the
+                            effectiveness of the tool under different conditions and designed a pipeline to test the
+                            algorithm on hundreds of input datasets. -->
+                        </p>
+                        <p>
+                            Developed a bash and python pipeline to test the algorithm on hundreds of input datasets
+                        </p>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="content">
+                        <img src="/images/cssi.jpg" alt="Google CSSI Logo">
+                        <h3>Google CSSI</h3>
+                        <h5>July 2018 - Aug. 2018</h5>
+                        <p>
+                            <!--
+                            The summer after my senior year of high school, I studied the basics of web development
+                            through Google's Computer Science Summer Institute program. The last week of CSSI was dedicated
+                            to developing a standalone application, where I collaborated with two other students to create
+                            FreshFridge, a web application that tracks user inputted expiration dates and reminds users via 
+                            Google Calendar. -->
+                            Studied the basics of web development through Google's Computer Science Summer Institute program
+                        </p>
+                    </div>
+                </div>
+            <!-- END GRID -->
+            </div>
+        <!-- END MAIN -->
+        </div>
+
+      </div>
+
+      <br>
+      <br>
+      <br>
+      <hr>
+      <div id="projects">
+        <h2>Projects</h2>
+
+        <div class="main">
+            <!-- Portfolio Gallery Grid -->
+            <div class="row">
+                <div class="column">
+                    <div class="content">
+                        <img src="/images/caprisun.png" alt="Caprisun Pathfinder">
+                        <h3>Caprisun Pathfinder</h3>
+                        <p>
+                            <!--
+                            A basic autonomous vehicle that detects and navigates to a radio frequency signal
+                            designed for Northrop Grumman's challenge at UCSD's H.A.R.D Hack 2020. The car was built 
+                            using Raspberry Pi computers running python scripts and interacting with the world via 
+                            multiple hardware modules. Our team of 5 ended up winning first place for Northrop 
+                            Grumman's challenge.-->
+                            Basic autonomous vehicle that detects and navigates to specific radio frequency signals
+                        </p>
+                        <p>
+                            Won first place of Northrop Grumman's challenge at UCSD's H.A.R.D Hack 2020
+                        </p>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="content">
+                        <img src="/images/meddata.png" alt="Med-Data">
+                        <h3>Med-Data</h3>
+                        <p>
+                            Android mobile application that tracks user medications and notifies users of FDA recalls
+                        </p>
+                        <p>
+                            Won the Best Medical Hack and Best Entrepreneurial Hack awards at Citrus Hacks 2019
+                        </p>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="content">
+                        <img src="/images/projecteuler.png" alt="Project Euler">
+                        <h3>Project Euler Solutions</h3>
+                        <p>
+                            Ongoing solutions for Project Euler, a set of computationally focused math problems
+                        </p>
+                        <p>
+                            Includes my implementations of data structures and other mathematical algorithms in C
+                        </p>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="content">
+                        <img src="/images/freshfridge.png" alt="Fresh Fridge">
+                        <h3>Fresh Fridge</h3>
+                        <p>
+                            Web application that tracks food expiration dates and integrates with Google Calendar for notifications
+                        </p>
+                        <p>
+                            Developed with two other students at Google CSSI within the span of 4 days
+                        </p>
+                    </div>
+                </div>
+            <!-- END GRID -->
+            </div>
+        <!-- END MAIN -->
+        </div>
+
+      </div>
+      <div id="contact">
+        <h2>Contact</h2>
+        <div id="icons-div">
+            <a href="https://github.com/yimingnzhao" target="_blank">
+                <img class="clickable-icon" alt="Github" src="/images/github_icon.png">
+            </a>
+            <a href="https://www.linkedin.com/in/yimingnzhao" target="_blank">
+                <img class="clickable-icon" alt="Linkedin" src="/images/linkedin_icon.png">
+            </a>
+        </div>
+      </div>
     </div>
+
   </body>
 </html>
