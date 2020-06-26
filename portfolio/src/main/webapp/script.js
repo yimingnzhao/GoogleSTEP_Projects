@@ -200,5 +200,12 @@ function startTypewriterAnimation() {
             $('#modal-div').css('display', 'none');
         }
     });
+
+    // Fetch data from server from tutorial
+    $('#server-fetch').find('button').click(function() {
+        fetch('/data').then((response) => response.text()).then((text) => {
+            $('#server-fetch').find('p').html(text);
+        });
+    });
     
  });
