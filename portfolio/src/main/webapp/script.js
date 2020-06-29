@@ -149,8 +149,8 @@ function startTypewriterAnimation() {
 function loadComments() {
     fetch('/data').then((response) => response.json()).then((json) => {
         var display = '<ul>';
-        for (var i = 0; i < json.array.length; i++) {
-            display += '<li>' + json.array[i] + '</li>';
+        for (var i = 0; i < json.length; i++) {
+            display += '<li>' + json[i].message + '</li>';
         }
         display += '</ul>';
         $('#comments-section').find('p').html(display);
