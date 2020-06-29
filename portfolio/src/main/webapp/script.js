@@ -146,6 +146,17 @@ function startTypewriterAnimation() {
     document.body.appendChild(css);
 }
 
+function loadComments() {
+    fetch('/data').then((response) => response.json()).then((json) => {
+        var display = '<ul>';
+        for (var i = 0; i < json.array.length; i++) {
+            display += '<li>' + json.array[i] + '</li>';
+        }
+        display += '</ul>';
+        $('#comments-section').find('p').html(display);
+    });
+}
+
 
 /**
  * Executes when document is loaded
@@ -166,6 +177,7 @@ function startTypewriterAnimation() {
     // Animates the typing animation
     window.onload = function() {
         startTypewriterAnimation();
+        loadComments();
     };
 
     // Opens modal for extra descriptions for of work and projects
@@ -199,18 +211,6 @@ function startTypewriterAnimation() {
         if (event.target ==  document.getElementById('modal-div')) {
             $('#modal-div').css('display', 'none');
         }
-    });
-
-    // Fetch data from server from tutorial
-    $('#server-fetch').find('button').click(function() {
-        fetch('/data').then((response) => response.json()).then((json) => {
-            var display = '<ul>';
-            for (var i = 0; i < json.array.length; i++) {
-                display += '<li>' + json.array[i] + '</li>';
-            }
-            display += '</ul>';
-            $('#server-fetch').find('p').html(display);
-        });
     });
     
  });

@@ -283,3 +283,8 @@ div#nav-content {
     margin-block-end: 0.25em;
 }
 /* End modal content */
+
+#comments-section > form > textarea {
+    resize: none;
+    width: 60%;
+}

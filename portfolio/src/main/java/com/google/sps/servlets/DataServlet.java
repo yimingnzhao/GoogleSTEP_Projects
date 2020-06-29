@@ -26,11 +26,11 @@ import java.util.*;
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
-    private List<String> pokemon;
+    private List<String> comments;
 
     @Override
     public void init() {
-        pokemon = Arrays.asList(new String[]{"bulbasaur", "charmander", "squirtle"});
+        comments = new ArrayList<String>();
     }
 
     @Override
@@ -40,11 +40,21 @@ public class DataServlet extends HttpServlet {
         response.getWriter().println(json);
     }
 
+    @Override
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        comments.add(request.getParameter("message"));
+        response.sendRedirect("/index.html");
+    }
+
     private String convertToJson() {
+        if (this.comments.size() == 0) {
+            return "{\"array\":[]}";
+        }
+
         String json = "{";
         json += "\"array\": [";
-        for (int i = 0; i < this.pokemon.size(); i++) {
-            json += "\"" + this.pokemon.get(i) + "\",";
+        for (int i = 0; i < this.comments.size(); i++) {
+            json += "\"" + this.comments.get(i) + "\",";
         } 
         json = json.substring(0, json.length() - 1);
         json += "]}";
