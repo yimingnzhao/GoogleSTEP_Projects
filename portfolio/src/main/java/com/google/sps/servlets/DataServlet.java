@@ -32,42 +32,55 @@ import com.google.sps.data.Comment;
 
 import java.util.*;
 
-/** Servlet that returns some example content. TODO: modify this file to handle comments data */
+/** Servlet that interacts with a Google DataStore database for a comments section */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
+    /**
+     * Gets database data for comments
+     * @param request The request object 
+     * @param response The response object
+     */
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        // Gets possible limit to the maximum number of comments, or defaults to 5  
         String commentLimitString = request.getParameter("limit");
         Integer commentLimitInteger = tryParseInt(commentLimitString);
         int commentLimit = (commentLimitInteger == null) ? 5 : commentLimitInteger.intValue();
 
+        // Gets list of most recent comments, based on the limit
         Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         PreparedQuery results = datastore.prepare(query);
         List<Entity> datastoreResults = results.asList(FetchOptions.Builder.withLimit(commentLimit));
 
+        // Converts Entity list to Comment list 
         List<Comment> comments = new ArrayList<>();
         for (Entity entity : datastoreResults) {
             long id = entity.getKey().getId();
             String message = (String) entity.getProperty("message");
             long timestamp = (long) entity.getProperty("timestamp");
-
             Comment comment = new Comment(id, message, timestamp);
             comments.add(comment);
         }
         
+        // Converts object to JSON and returns to front-end
         Gson gson = new Gson();
-
         response.setContentType("application/json;");
         response.getWriter().println(gson.toJson(comments));
     }
 
+    /**
+     * Adds comment data to database
+     * @param request The request object
+     * @param response The response object
+     */
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String message = request.getParameter("message");
         long timestamp = System.currentTimeMillis();
 
+        // Creates database entry Entity and populates its parameters
         Entity commentEntity = new Entity("Comment");
         commentEntity.setProperty("message", message);
         commentEntity.setProperty("timestamp", timestamp);
@@ -77,6 +90,11 @@ public class DataServlet extends HttpServlet {
         response.sendRedirect("/");
     }
 
+    /**
+     * Abstracts out exceptions when parsing strings to ints
+     * @param str The string to try to parse to an int
+     * @return The Integer object that holds the parsed int or null if exception is thrown
+     */
     public Integer tryParseInt(String str) {
         try {
             return Integer.parseInt(str);

@@ -146,10 +146,16 @@ function startTypewriterAnimation() {
     document.body.appendChild(css);
 }
 
+/**
+ * Loads comments from database, with option to specify the maximum loaded comments
+ * @param {string} query The number of comments that should be fetched
+ */
 function loadComments(query) {
+    // Creates the fetch URL with specified maximum limit of comments
     var fetchURL = '/data';
     fetchURL = (hasOnlyDigits(query)) ? fetchURL + '?limit=' + query : fetchURL;
 
+    // Gets comment data and injects HTML to display the comments
     fetch(fetchURL).then((response) => response.json()).then((json) => {
         var display = '<ul>';
         for (var i = 0; i < json.length; i++) {
@@ -160,6 +166,11 @@ function loadComments(query) {
     });
 }
 
+/**
+ * Determines if the input has only digits
+ * @param {string} value The input to check
+ * @return A boolean whether the input has only digits
+ */
 function hasOnlyDigits(value) {
     return /^\d+$/.test(value);
 }
@@ -220,6 +231,7 @@ function hasOnlyDigits(value) {
         }
     });
 
+    // Loads comments based on the limit passed
     $('#comment-limit-button').click(function() {
         loadComments($('#comment-limit-input').val());
     });
