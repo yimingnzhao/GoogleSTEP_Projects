@@ -328,6 +328,9 @@
             <div id="contact">
                 <h2>Contact</h2>
                 <div id="comments-section"> 
+                    <input type="number" id="comment-limit-input" name="limit" min="1" oninput="validity.valid||(value='');">
+                    <button type="button" id="comment-limit-button">Submit</button>
+
                     <form action="/data" method="post">
                         <textarea name="message"></textarea>
                         <br>

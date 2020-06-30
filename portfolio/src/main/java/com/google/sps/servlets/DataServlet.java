@@ -26,6 +26,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.gson.Gson;
 import com.google.sps.data.Comment;
 
@@ -35,21 +36,19 @@ import java.util.*;
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
-    private List<String> comments;
-
-    @Override
-    public void init() {
-        comments = new ArrayList<String>();
-    }
-
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String commentLimitString = request.getParameter("limit");
+        Integer commentLimitInteger = tryParseInt(commentLimitString);
+        int commentLimit = (commentLimitInteger == null) ? 5 : commentLimitInteger.intValue();
+
         Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         PreparedQuery results = datastore.prepare(query);
+        List<Entity> datastoreResults = results.asList(FetchOptions.Builder.withLimit(commentLimit));
 
         List<Comment> comments = new ArrayList<>();
-        for (Entity entity : results.asIterable()) {
+        for (Entity entity : datastoreResults) {
             long id = entity.getKey().getId();
             String message = (String) entity.getProperty("message");
             long timestamp = (long) entity.getProperty("timestamp");
@@ -57,7 +56,7 @@ public class DataServlet extends HttpServlet {
             Comment comment = new Comment(id, message, timestamp);
             comments.add(comment);
         }
-
+        
         Gson gson = new Gson();
 
         response.setContentType("application/json;");
@@ -68,7 +67,6 @@ public class DataServlet extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String message = request.getParameter("message");
         long timestamp = System.currentTimeMillis();
-        comments.add(message);
 
         Entity commentEntity = new Entity("Comment");
         commentEntity.setProperty("message", message);
@@ -79,18 +77,12 @@ public class DataServlet extends HttpServlet {
         response.sendRedirect("/");
     }
 
-    private String convertToJson() {
-        if (this.comments.size() == 0) {
-            return "{\"array\":[]}";
+    public Integer tryParseInt(String str) {
+        try {
+            return Integer.parseInt(str);
+        } catch (NumberFormatException e) {
+            return null;
         }
-
-        String json = "{";
-        json += "\"array\": [";
-        for (int i = 0; i < this.comments.size(); i++) {
-            json += "\"" + this.comments.get(i) + "\",";
-        } 
-        json = json.substring(0, json.length() - 1);
-        json += "]}";
-        return json;
     }
+
 }

@@ -146,8 +146,11 @@ function startTypewriterAnimation() {
     document.body.appendChild(css);
 }
 
-function loadComments() {
-    fetch('/data').then((response) => response.json()).then((json) => {
+function loadComments(query) {
+    var fetchURL = '/data';
+    fetchURL = (hasOnlyDigits(query)) ? fetchURL + '?limit=' + query : fetchURL;
+
+    fetch(fetchURL).then((response) => response.json()).then((json) => {
         var display = '<ul>';
         for (var i = 0; i < json.length; i++) {
             display += '<li>' + json[i].message + '</li>';
@@ -155,6 +158,10 @@ function loadComments() {
         display += '</ul>';
         $('#comments-section').find('p').html(display);
     });
+}
+
+function hasOnlyDigits(value) {
+    return /^\d+$/.test(value);
 }
 
 
@@ -177,7 +184,7 @@ function loadComments() {
     // Animates the typing animation
     window.onload = function() {
         startTypewriterAnimation();
-        loadComments();
+        loadComments('');
     };
 
     // Opens modal for extra descriptions for of work and projects
@@ -211,6 +218,10 @@ function loadComments() {
         if (event.target ==  document.getElementById('modal-div')) {
             $('#modal-div').css('display', 'none');
         }
+    });
+
+    $('#comment-limit-button').click(function() {
+        loadComments($('#comment-limit-input').val());
     });
     
  });
