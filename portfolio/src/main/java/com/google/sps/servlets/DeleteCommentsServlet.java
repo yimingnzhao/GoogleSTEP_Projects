@@ -49,10 +49,11 @@ public class DeleteCommentsServlet extends HttpServlet {
      */
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
+        // Initializes a buffer to build the request string
         StringBuffer buffer = new StringBuffer();
         String line = null;
 
+        // Builds the string from the servlet request
         try {
             BufferedReader reader = request.getReader();
             while ((line = reader.readLine()) != null) {
@@ -63,17 +64,17 @@ public class DeleteCommentsServlet extends HttpServlet {
             return;
         }
 
+        // Buffer string should be a list of ids seperated by the comma character
         String[] commentIds = buffer.toString().split(",");
 
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-
         for (String id : commentIds) {
-            System.out.println(id);
             Long numId = tryParseLong(id);
             if (numId == null) {
                 System.out.println("Exception: Unable to parse comment id as long");
                 continue;
             }
+            // Creates a datastore Key object for the comment id to delete the key
             Key key = KeyFactory.createKey("Comment", numId.longValue());
             try {
                 Entity exist = datastore.get(key);
@@ -86,6 +87,11 @@ public class DeleteCommentsServlet extends HttpServlet {
         response.sendRedirect("/"); 
     }
 
+    /**
+     * Abstracts out exceptions when parsing strings to longs
+     * @param str The string to try to parse to a long
+     * @return The Long object that holds the parsed long or null if exception is thrown
+     */
     public Long tryParseLong(String str) {
         try {
             return Long.parseLong(str);

@@ -239,13 +239,14 @@ function hasOnlyDigits(value) {
     // Deletes all comments from database
     $('#comment-delete-button').click(function() {
         fetch('/data').then((response) => response.json()).then((json) => {
-            
+            // Builds the data to send to DeleteCommentsServlet
             var stringBuild = '';
             for (var i = 0; i < json.length; i++) {
                 stringBuild += json[i].id + ',';
             }
             stringBuild = stringBuild.slice(0, -1);
 
+            // Sends built data as a POST request and then reloads page
             $.ajax({
                 url: '/delete-data',
                 type: 'POST',
@@ -256,7 +257,6 @@ function hasOnlyDigits(value) {
                     location.reload();
                 }
             });
-
         });
     });
     
