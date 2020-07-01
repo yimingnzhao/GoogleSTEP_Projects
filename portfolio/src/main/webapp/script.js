@@ -146,6 +146,35 @@ function startTypewriterAnimation() {
     document.body.appendChild(css);
 }
 
+/**
+ * Loads comments from database, with option to specify the maximum loaded comments
+ * @param {string} query The number of comments that should be fetched
+ */
+function loadComments(query) {
+    // Creates the fetch URL with specified maximum limit of comments
+    var fetchURL = '/data';
+    fetchURL = (hasOnlyDigits(query)) ? fetchURL + '?limit=' + query : fetchURL;
+
+    // Gets comment data and injects HTML to display the comments
+    fetch(fetchURL).then((response) => response.json()).then((json) => {
+        var display = '<ul>';
+        for (var i = 0; i < json.length; i++) {
+            display += '<li>' + json[i].message + '</li>';
+        }
+        display += '</ul>';
+        $('#comments-section').find('p').html(display);
+    });
+}
+
+/**
+ * Determines if the input has only digits
+ * @param {string} value The input to check
+ * @return A boolean whether the input has only digits
+ */
+function hasOnlyDigits(value) {
+    return /^\d+$/.test(value);
+}
+
 
 /**
  * Executes when document is loaded
@@ -166,6 +195,7 @@ function startTypewriterAnimation() {
     // Animates the typing animation
     window.onload = function() {
         startTypewriterAnimation();
+        loadComments('');
     };
 
     // Opens modal for extra descriptions for of work and projects
@@ -199,6 +229,35 @@ function startTypewriterAnimation() {
         if (event.target ==  document.getElementById('modal-div')) {
             $('#modal-div').css('display', 'none');
         }
+    });
+
+    // Loads comments based on the limit passed
+    $('#comment-limit-button').click(function() {
+        loadComments($('#comment-limit-input').val());
+    });
+
+    // Deletes all comments from database
+    $('#comment-delete-button').click(function() {
+        fetch('/data').then((response) => response.json()).then((json) => {
+            // Builds the data to send to DeleteCommentsServlet
+            var stringBuild = '';
+            for (var i = 0; i < json.length; i++) {
+                stringBuild += json[i].id + ',';
+            }
+            stringBuild = stringBuild.slice(0, -1);
+
+            // Sends built data as a POST request and then reloads page
+            $.ajax({
+                url: '/delete-data',
+                type: 'POST',
+                data:stringBuild,
+                contentType: 'text/plain; charset=UTF-8',
+                dataType: 'text',
+                success: () => {
+                    location.reload();
+                }
+            });
+        });
     });
     
  });

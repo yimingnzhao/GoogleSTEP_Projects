@@ -327,6 +327,19 @@
 
             <div id="contact">
                 <h2>Contact</h2>
+                <div id="comments-section"> 
+                    <input type="number" id="comment-limit-input" name="limit" min="1" oninput="validity.valid||(value='');">
+                    <button type="button" id="comment-limit-button">Submit</button>
+
+                    <form action="/data" method="post">
+                        <textarea name="message"></textarea>
+                        <br>
+                        <br>
+                        <input type="submit">
+                    </form>
+                    <p> </p>
+                    <button type="button" id="comment-delete-button">Delete All</button>
+                </div>
                 <div id="icons-div">
                     <a href="https://github.com/yimingnzhao" target="_blank">
                         <img class="clickable-icon" alt="Github" src="/images/github_icon.png">
