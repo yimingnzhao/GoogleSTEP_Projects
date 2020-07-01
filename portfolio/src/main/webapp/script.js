@@ -235,5 +235,29 @@ function hasOnlyDigits(value) {
     $('#comment-limit-button').click(function() {
         loadComments($('#comment-limit-input').val());
     });
+
+    // Deletes all comments from database
+    $('#comment-delete-button').click(function() {
+        fetch('/data').then((response) => response.json()).then((json) => {
+            
+            var stringBuild = '';
+            for (var i = 0; i < json.length; i++) {
+                stringBuild += json[i].id + ',';
+            }
+            stringBuild = stringBuild.slice(0, -1);
+
+            $.ajax({
+                url: '/delete-data',
+                type: 'POST',
+                data:stringBuild,
+                contentType: 'text/plain; charset=UTF-8',
+                dataType: 'text',
+                success: () => {
+                    location.reload();
+                }
+            });
+
+        });
+    });
     
  });

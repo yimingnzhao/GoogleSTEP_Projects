@@ -43,16 +43,21 @@ public class DataServlet extends HttpServlet {
      */
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // Gets possible limit to the maximum number of comments, or defaults to 5  
+        // Gets possible limit to the maximum number of comments  
         String commentLimitString = request.getParameter("limit");
         Integer commentLimitInteger = tryParseInt(commentLimitString);
-        int commentLimit = (commentLimitInteger == null) ? 5 : commentLimitInteger.intValue();
+        int commentLimit = (commentLimitInteger == null) ? -1 : commentLimitInteger.intValue();
 
         // Gets list of most recent comments, based on the limit
         Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         PreparedQuery results = datastore.prepare(query);
-        List<Entity> datastoreResults = results.asList(FetchOptions.Builder.withLimit(commentLimit));
+        Iterable<Entity> datastoreResults = null;
+        if (commentLimit == -1) {
+            datastoreResults = results.asIterable();
+        } else {
+            datastoreResults = results.asIterable(FetchOptions.Builder.withLimit(commentLimit));
+        }
 
         // Converts Entity list to Comment list 
         List<Comment> comments = new ArrayList<>();
@@ -87,7 +92,7 @@ public class DataServlet extends HttpServlet {
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         datastore.put(commentEntity);
 
-        response.sendRedirect("/");
+        response.sendRedirect("/#contact");
     }
 
     /**
@@ -102,5 +107,4 @@ public class DataServlet extends HttpServlet {
             return null;
         }
     }
-
 }

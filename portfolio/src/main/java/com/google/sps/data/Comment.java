@@ -26,4 +26,8 @@ public final class Comment {
     this.message = message;
     this.timestamp = timestamp;
   }
+
+  public String getIdString() {
+      return "" + id;
+  }
 }
