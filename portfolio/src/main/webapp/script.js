@@ -162,7 +162,7 @@ function loadComments(query) {
             display += '<li>' + json[i].message + '</li>';
         }
         display += '</ul>';
-        $('#comments-section').find('p').html(display);
+        $('#comments-display').find('p').html(display);
     });
 }
 
