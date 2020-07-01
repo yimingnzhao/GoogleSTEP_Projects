@@ -35,7 +35,6 @@ import java.util.*;
 public class DataServlet extends HttpServlet {
 
     private static final int NO_MAX_COMMENT_LIMIT = -1;
-    private static final int PARSE_INT_EXCEPTION = -1;
 
     /**
      * Gets database data for comments
@@ -107,7 +106,7 @@ public class DataServlet extends HttpServlet {
         try {
             return Integer.parseInt(str);
         } catch (NumberFormatException e) {
-            return PARSE_INT_EXCEPTION;
+            return NO_MAX_COMMENT_LIMIT;
         }
     }
 }
