@@ -14,6 +14,8 @@
 
 package com.google.sps.data;
 
+import java.lang.Long;
+
 /** A comment entity for the comments section of the portfolio. */
 public final class Comment {
 
@@ -28,6 +30,6 @@ public final class Comment {
   }
 
   public String getIdString() {
-      return "" + id;
+      return Long.toString(id);
   }
 }
