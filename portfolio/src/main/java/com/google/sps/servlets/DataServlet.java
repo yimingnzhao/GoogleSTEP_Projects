@@ -34,6 +34,9 @@ import java.util.*;
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
+    private static final int NO_MAX_COMMENT_LIMIT = -1;
+    private static final int PARSE_INT_EXCEPTION = -1;
+
     /**
      * Gets database data for comments
      * @param request The request object 
@@ -43,15 +46,17 @@ public class DataServlet extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         // Gets possible limit to the maximum number of comments  
         String commentLimitString = request.getParameter("limit");
-        Integer commentLimitInteger = tryParseInt(commentLimitString);
-        int commentLimit = (commentLimitInteger == null) ? -1 : commentLimitInteger.intValue();
+        int commentLimit = tryParseInt(commentLimitString);
+        if (commentLimit <= 0) {
+            commentLimit = NO_MAX_COMMENT_LIMIT;
+        }
 
         // Gets list of most recent comments, based on the limit
         Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         PreparedQuery results = datastore.prepare(query);
         Iterable<Entity> datastoreResults = null;
-        if (commentLimit == -1) {
+        if (commentLimit == NO_MAX_COMMENT_LIMIT) {
             datastoreResults = results.asIterable();
         } else {
             datastoreResults = results.asIterable(FetchOptions.Builder.withLimit(commentLimit));
@@ -96,13 +101,13 @@ public class DataServlet extends HttpServlet {
     /**
      * Abstracts out exceptions when parsing strings to ints
      * @param str The string to try to parse to an int
-     * @return The Integer object that holds the parsed int or null if exception is thrown
+     * @return The int value of the string, or -1 if an exception is thrown
      */
-    public Integer tryParseInt(String str) {
+    public int tryParseInt(String str) {
         try {
             return Integer.parseInt(str);
         } catch (NumberFormatException e) {
-            return null;
+            return PARSE_INT_EXCEPTION;
         }
     }
 }

@@ -37,6 +37,8 @@ import java.util.*;
 @WebServlet("/delete-data")
 public class DeleteCommentsServlet extends HttpServlet {
 
+    private static final long PARSE_LONG_EXCEPTION = -1;
+
     /**
      * Adds comment data to database
      * @param request The request object
@@ -64,13 +66,13 @@ public class DeleteCommentsServlet extends HttpServlet {
 
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         for (String id : commentIds) {
-            Long numId = tryParseLong(id);
-            if (numId == null) {
+            long numId = tryParseLong(id);
+            if (numId == PARSE_LONG_EXCEPTION) {
                 System.out.println("Exception: Unable to parse comment id as long");
                 continue;
             }
             // Creates a datastore Key object for the comment id to delete the key
-            Key key = KeyFactory.createKey("Comment", numId.longValue());
+            Key key = KeyFactory.createKey("Comment", numId);
             try {
                 Entity exist = datastore.get(key);
             } catch (Exception e) {
@@ -85,7 +87,7 @@ public class DeleteCommentsServlet extends HttpServlet {
     /**
      * Abstracts out exceptions when parsing strings to longs
      * @param str The string to try to parse to a long
-     * @return The Long object that holds the parsed long or null if exception is thrown
+     * @return The long value of the string, or -1 if an exception is thrown
      */
     public Long tryParseLong(String str) {
         try {
