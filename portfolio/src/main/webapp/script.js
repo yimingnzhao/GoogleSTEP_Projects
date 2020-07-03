@@ -157,13 +157,30 @@ function loadComments(query) {
 
     // Gets comment data and injects HTML to display the comments
     fetch(fetchURL).then((response) => response.json()).then((json) => {
-        var display = '<ul>';
+        var display = '<table>';
         for (var i = 0; i < json.length; i++) {
-            display += '<li>' + json[i].message + '</li>';
+            display += '<tr><td>';
+            display += '<b>' + json[i].name + ': </b>';
+            display += json[i].message;
+            display += '</tr></td>';
         }
-        display += '</ul>';
-        $('#comments-display').find('p').html(display);
+        display += '</table>';
+        $('#comments-scroll').html(display);
     });
+}
+
+function validateCommentForm() {
+    var name = document.forms['comment-form']['name'].value;
+    var message = document.forms['comment-form']['message'].value;
+    if (name == '' || $.trim(name) == '') {
+        alert("Name field must be filled out");
+        return false;
+    }
+    if (message == '' || $.trim(message) == '') {
+        alert("Message field must be filled out");
+        return false;
+    }
+    return true;
 }
 
 /**

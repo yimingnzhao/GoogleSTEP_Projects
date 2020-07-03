@@ -330,7 +330,9 @@
                 <h2>Comments</h2>
                 <div id="comments-section">
                     <div id="comments-input" class="comments-div">
-                        <form action="/data" method="post">
+                        <form action="/data" name="comment-form" onsubmit="return validateCommentForm()" method="post">
+                            <label for="name">Name: </label>
+                            <input type="text" name="name"></input><br>
                             <label for="message">Please leave a comment:</label><br>
                             <textarea name="message" rows="15"></textarea>
                             <br>
@@ -344,7 +346,6 @@
                         <input type="number" id="comment-limit-input" name="limit" min="1" oninput="validity.valid||(value='');">
                         <button type="button" id="comment-limit-button">Filter</button>
                         <div id="comments-scroll">
-                            <p></p>
                         </div>
                         <button type="button" id="comment-delete-button">Delete All</button>
                     </div>
