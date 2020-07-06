@@ -16,6 +16,7 @@
             <a href="#about">About Me</a>
             <a href="#work">Work </a>        
             <a href="#projects">Projects</a>
+            <a href="#comments">Comments</a>
             <a href="#contact">Contact</a>
         </div>
 
@@ -84,7 +85,7 @@
             </div>
             <hr>
 
-            <div id="work"<p>
+            <div id="work">
                 <h2>Work</h2>
                 <div class="main">
                     <div class="content">
@@ -325,21 +326,36 @@
                 </div>
             </div>
 
+            <div id="comments">
+                <h2>Comments</h2>
+                <div id="comments-section">
+                    <div id="comments-input" class="comments-div">
+                        <form action="/data" name="comment-form" onsubmit="return validateCommentForm()" method="post">
+                            <label for="name">Name: </label>
+                            <input type="text" name="name"></input><br>
+                            <label for="message">Please leave a comment:</label><br>
+                            <textarea name="message" rows="15"></textarea>
+                            <br>
+                            <br>
+                            <input type="submit">
+                        </form>
+                    </div>
+
+                    <div id="comments-display" class="comments-div">
+                        Filter comments by most recent: 
+                        <input type="number" id="comment-limit-input" name="limit" min="1" oninput="validity.valid||(value='');">
+                        <button type="button" id="comment-limit-button">Filter</button>
+                        <div id="comments-scroll">
+                        </div>
+                        <button type="button" id="comment-delete-button">Delete All</button>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <br>
+
             <div id="contact">
                 <h2>Contact</h2>
-                <div id="comments-section"> 
-                    <input type="number" id="comment-limit-input" name="limit" min="1" oninput="validity.valid||(value='');">
-                    <button type="button" id="comment-limit-button">Submit</button>
-
-                    <form action="/data" method="post">
-                        <textarea name="message"></textarea>
-                        <br>
-                        <br>
-                        <input type="submit">
-                    </form>
-                    <p> </p>
-                    <button type="button" id="comment-delete-button">Delete All</button>
-                </div>
                 <div id="icons-div">
                     <a href="https://github.com/yimingnzhao" target="_blank">
                         <img class="clickable-icon" alt="Github" src="/images/github_icon.png">

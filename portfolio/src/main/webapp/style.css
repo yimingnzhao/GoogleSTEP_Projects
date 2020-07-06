@@ -284,7 +284,49 @@ div#nav-content {
 }
 /* End modal content */
 
-#comments-section > form > textarea {
-    resize: none;
-    width: 60%;
+/* Begin styles for comments section */
+#comments-section {
+    box-sizing: border-box;
+
 }
+
+#comments-section:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.comments-div {
+    float: left;
+    width: 50%;
+    padding: 15px;
+    height: 350px;
+}
+
+#comments-input > form > textarea {
+    resize: none;
+    width: 100%;  
+}
+
+@media screen and (max-width: 600px) {
+  .comments-div {
+    width: 100%;
+  }
+}
+
+#comments-scroll {
+    height: 230px;
+    overflow: scroll;
+}
+
+th, td {
+  text-align: left;
+  padding: 8px;
+}
+
+table {
+    width: 100%;
+}
+
+tr:nth-child(even) {background-color: #f2f2f2;}
+/* End styles for comments section */
