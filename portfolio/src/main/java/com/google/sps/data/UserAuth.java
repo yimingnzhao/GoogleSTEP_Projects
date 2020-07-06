@@ -14,24 +14,19 @@
 
 package com.google.sps.data;
 
-import java.lang.Long;
-
 /** A comment entity for the comments section of the portfolio. */
-public final class Comment {
+public final class UserAuth {
 
-  private final long id;
-  private final String username;
-  private final String message;
-  private final long timestamp;
+  private final boolean isLoggedIn;
+  private final String loginURL;
+  private final String logoutURL;
+  private final String userEmail;
 
-  public Comment(long id, String username, String message, long timestamp) {
-    this.id = id;
-    this.username = username;
-    this.message = message;
-    this.timestamp = timestamp;
+  public UserAuth(boolean isLoggedIn, String loginURL, String logoutURL, String userEmail) {
+      this.isLoggedIn = isLoggedIn;
+      this.loginURL = loginURL;
+      this.logoutURL = logoutURL;
+      this.userEmail = userEmail;
   }
 
-  public String getIdString() {
-      return Long.toString(id);
-  }
 }
