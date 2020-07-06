@@ -160,7 +160,7 @@ function loadComments(query) {
         var display = '<table>';
         for (var i = 0; i < json.length; i++) {
             display += '<tr><td>';
-            display += '<b>' + json[i].name + ': </b>';
+            display += '<b>' + json[i].username + ': </b>';
             display += json[i].message;
             display += '</tr></td>';
         }
@@ -180,6 +180,9 @@ function validateCommentForm() {
         alert("Message field must be filled out");
         return false;
     }
+
+    document.forms['comment-form']['name'].value = escapeHtml(name);
+    document.forms['comment-form']['message'].value = escapeHtml(message);
     return true;
 }
 
@@ -190,6 +193,18 @@ function validateCommentForm() {
  */
 function hasOnlyDigits(value) {
     return /^\d+$/.test(value);
+}
+
+function escapeHtml(text) {
+  var map = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+  };
+  
+  return text.replace(/[&<>"']/g, function(m) { return map[m]; });
 }
 
 

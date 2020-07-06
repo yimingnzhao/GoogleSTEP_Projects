@@ -65,10 +65,10 @@ public class DataServlet extends HttpServlet {
         List<Comment> comments = new ArrayList<>();
         for (Entity entity : datastoreResults) {
             long id = entity.getKey().getId();
-            String name = (String) entity.getProperty("name");
+            String username = (String) entity.getProperty("username");
             String message = (String) entity.getProperty("message");
             long timestamp = (long) entity.getProperty("timestamp");
-            Comment comment = new Comment(id, name, message, timestamp);
+            Comment comment = new Comment(id, username, message, timestamp);
             comments.add(comment);
         }
         
@@ -85,13 +85,13 @@ public class DataServlet extends HttpServlet {
      */
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String name = request.getParameter("name");
+        String username = request.getParameter("name");
         String message = request.getParameter("message");
         long timestamp = System.currentTimeMillis();
 
         // Creates database entry Entity and populates its parameters
         Entity commentEntity = new Entity("Comment");
-        commentEntity.setProperty("name", name);
+        commentEntity.setProperty("username", username);
         commentEntity.setProperty("message", message);
         commentEntity.setProperty("timestamp", timestamp);
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();

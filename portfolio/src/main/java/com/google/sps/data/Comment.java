@@ -20,13 +20,13 @@ import java.lang.Long;
 public final class Comment {
 
   private final long id;
-  private final String name;
+  private final String username;
   private final String message;
   private final long timestamp;
 
-  public Comment(long id, String name, String message, long timestamp) {
+  public Comment(long id, String username, String message, long timestamp) {
     this.id = id;
-    this.name = name;
+    this.username = username;
     this.message = message;
     this.timestamp = timestamp;
   }
