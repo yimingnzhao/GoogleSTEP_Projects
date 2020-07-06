@@ -26,6 +26,8 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import com.google.gson.Gson;
 import com.google.sps.data.Comment;
 import java.util.*;
@@ -85,6 +87,13 @@ public class DataServlet extends HttpServlet {
      */
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        UserService userService = UserServiceFactory.getUserService();
+        if (!userService.isUserLoggedIn()) {
+            response.sendRedirect("/#comments");
+            return;
+        }
+
+        String userEmail = userService.getCurrentUser().getEmail();
         String username = request.getParameter("name");
         String message = request.getParameter("message");
         long timestamp = System.currentTimeMillis();
@@ -93,11 +102,12 @@ public class DataServlet extends HttpServlet {
         Entity commentEntity = new Entity("Comment");
         commentEntity.setProperty("username", username);
         commentEntity.setProperty("message", message);
+        commentEntity.setProperty("email", userEmail);
         commentEntity.setProperty("timestamp", timestamp);
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         datastore.put(commentEntity);
 
-        response.sendRedirect("/#contact");
+        response.sendRedirect("/#comments");
     }
 
     /**

@@ -191,12 +191,25 @@ function validateCommentForm() {
     return true;
 }
 
+/**
+ * Edits the comment section based on current login status
+ */
 function manageLogin() {
+    // Fetches the current login status and changes html based on the status
     fetch('/login').then((response) => response.json()).then((userAuth) => {
         if (userAuth.isLoggedIn) {
+            $('#comments-input').find('form').find('#comment-form-name-input').val(userAuth.userEmail);
 
+            var breaks = '<br><br>';
+            var logoutButton = '<button onclick="document.location=\'' + userAuth.logoutURL + '\'">Logout</button>';
+            $('#comments-input').append(breaks);
+            $('#comments-input').append(logoutButton);
         } else {
-            
+            var loginDiv = '<div><p>Please login to comment</p>';
+            loginDiv += '<button onclick="document.location=\'' + userAuth.loginURL + '\'">Login</button';
+            loginDiv += '</div>';
+            $('#comments-input').find('form').hide();
+            $('#comments-input').append(loginDiv);
         }
     });
 }
@@ -209,7 +222,6 @@ function manageLogin() {
 function hasOnlyDigits(value) {
     return /^\d+$/.test(value);
 }
-
 
 /**
  * Escapes special characters used in HTML
@@ -224,7 +236,6 @@ function escapeHtml(text) {
     '"': '&quot;',
     "'": '&#039;'
   };
-
   return text.replace(/[&<>"']/g, function(m) { return map[m]; });
 }
 

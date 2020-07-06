@@ -24,16 +24,21 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 import com.google.sps.data.UserAuth;
 
-/** Insert comments here */
+/** Servlet that interacts with user login */
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
 
+    /**
+     * Gets current login status
+     * @param request The request object 
+     * @param response The response object
+     */
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
         UserAuth userAuth;
         UserService userService = UserServiceFactory.getUserService();
 
+        // Sets parameters of the UserAuth object based on current login status
         if (userService.isUserLoggedIn()) {
             String userEmail = userService.getCurrentUser().getEmail();
             String urlToRedirectToAfterUserLogsOut = "/";
