@@ -90,11 +90,11 @@ public class DeleteCommentsServlet extends HttpServlet {
      * @param str The string to try to parse to a long
      * @return The long value of the string, or -1 if an exception is thrown
      */
-    public Long tryParseLong(String str) {
+    public long tryParseLong(String str) {
         try {
             return Long.parseLong(str);
         } catch (NumberFormatException e) {
-            return -1;
+            return PARSE_LONG_EXCEPTION;
         }
     }
 }
