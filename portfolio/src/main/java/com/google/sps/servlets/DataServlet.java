@@ -30,6 +30,7 @@ import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 import com.google.gson.Gson;
 import com.google.sps.data.Comment;
+import java.lang.Long;
 import java.util.*;
 
 /** Servlet that interacts with a Google DataStore database for a comments section */
@@ -53,23 +54,34 @@ public class DataServlet extends HttpServlet {
         }
 
         // Gets list of most recent comments, based on the limit
-        Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
+        Query commentQuery = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-        PreparedQuery results = datastore.prepare(query);
+        PreparedQuery commentResults = datastore.prepare(commentQuery);
         Iterable<Entity> datastoreResults = null;
         if (commentLimit == NO_MAX_COMMENT_LIMIT) {
-            datastoreResults = results.asIterable();
+            datastoreResults = commentResults.asIterable();
         } else {
-            datastoreResults = results.asIterable(FetchOptions.Builder.withLimit(commentLimit));
+            datastoreResults = commentResults.asIterable(FetchOptions.Builder.withLimit(commentLimit));
+        }
+
+        Map<String, String> userDisplayNames = new HashMap<>();
+        Query userQuery = new Query("UserData");
+        PreparedQuery userResults = datastore.prepare(userQuery);
+        for (Entity entity : userResults.asIterable()) {
+            String userId = (String) entity.getProperty("id");
+            String displayName = (String) entity.getProperty("displayName");
+            userDisplayNames.put(userId, displayName);
         }
 
         // Converts Entity list to Comment list 
         List<Comment> comments = new ArrayList<>();
         for (Entity entity : datastoreResults) {
             long id = entity.getKey().getId();
-            String username = (String) entity.getProperty("username");
+            String userId = (String) entity.getProperty("userId");
+            String username = userDisplayNames.getOrDefault(userId, "User");
             String message = (String) entity.getProperty("message");
             long timestamp = (long) entity.getProperty("timestamp");
+
             Comment comment = new Comment(id, username, message, timestamp);
             comments.add(comment);
         }
@@ -93,16 +105,15 @@ public class DataServlet extends HttpServlet {
             return;
         }
 
+        String userId = userService.getCurrentUser().getUserId();
         String userEmail = userService.getCurrentUser().getEmail();
-        String username = request.getParameter("name");
         String message = request.getParameter("message");
         long timestamp = System.currentTimeMillis();
 
         // Creates database entry Entity and populates its parameters
         Entity commentEntity = new Entity("Comment");
-        commentEntity.setProperty("username", username);
+        commentEntity.setProperty("userId", userId);
         commentEntity.setProperty("message", message);
-        commentEntity.setProperty("email", userEmail);
         commentEntity.setProperty("timestamp", timestamp);
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         datastore.put(commentEntity);

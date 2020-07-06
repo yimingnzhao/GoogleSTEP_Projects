@@ -170,24 +170,34 @@ function loadComments(query) {
 }
 
 /**
- * Ensures that the name and message fields of the comment are not blank
+ * Ensures that the message field of the comment is not blank
  * @return {boolean} Whether the comment is valid or not
  */
 function validateCommentForm() {
-    var name = document.forms['comment-form']['name'].value;
     var message = document.forms['comment-form']['message'].value;
-    if (name == '' || $.trim(name) == '') {
-        alert("Name field must be filled out");
-        return false;
-    }
     if (message == '' || $.trim(message) == '') {
         alert("Message field must be filled out");
         return false;
     }
 
     // Escapes HTML characters before submitting
-    document.forms['comment-form']['name'].value = escapeHtml(name);
     document.forms['comment-form']['message'].value = escapeHtml(message);
+    return true;
+}
+
+function validateNameForm() {
+    var name = document.forms['display-form']['name'].value;
+    if (name == '' || $.trim(name) == '') {
+        alert("Display name field must be filled out");
+        return false;
+    } else if ($.trim(name).length > 20) {
+        alert("Display name can be at most 20 characters");
+        return false;
+    } else if (!isAlphanumeric($.trim(name))) {
+        alert("Display name must be alphanumeric");
+        return false;
+    } 
+    document.forms['display-form']['name'].value = $.trim(name);
     return true;
 }
 
@@ -198,7 +208,7 @@ function manageLogin() {
     // Fetches the current login status and changes html based on the status
     fetch('/login').then((response) => response.json()).then((userAuth) => {
         if (userAuth.isLoggedIn) {
-            $('#comments-input').find('form').find('#comment-form-name-input').val(userAuth.userEmail);
+            //$('#comments-input').find('form').find('#comment-form-name-input').val(userAuth.userEmail);
 
             var breaks = '<br><br>';
             var logoutButton = '<button onclick="document.location=\'' + userAuth.logoutURL + '\'">Logout</button>';
@@ -208,6 +218,7 @@ function manageLogin() {
             var loginDiv = '<div><p>Please login to comment</p>';
             loginDiv += '<button onclick="document.location=\'' + userAuth.loginURL + '\'">Login</button';
             loginDiv += '</div>';
+            $('#comments-input').find('#current-display-name').hide();
             $('#comments-input').find('form').hide();
             $('#comments-input').append(loginDiv);
         }
@@ -221,6 +232,10 @@ function manageLogin() {
  */
 function hasOnlyDigits(value) {
     return /^\d+$/.test(value);
+}
+
+function isAlphanumeric(value) {
+    return /^[0-9a-z]+$/.test(value);
 }
 
 /**
