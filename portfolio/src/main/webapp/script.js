@@ -210,6 +210,7 @@ function hasOnlyDigits(value) {
     return /^\d+$/.test(value);
 }
 
+
 /**
  * Escapes special characters used in HTML
  * @param {string} text The string to escape HTML characters
@@ -223,6 +224,7 @@ function escapeHtml(text) {
     '"': '&quot;',
     "'": '&#039;'
   };
+
   return text.replace(/[&<>"']/g, function(m) { return map[m]; });
 }
 

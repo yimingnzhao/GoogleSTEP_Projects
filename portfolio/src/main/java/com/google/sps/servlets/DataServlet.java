@@ -85,13 +85,13 @@ public class DataServlet extends HttpServlet {
      */
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String name = request.getParameter("name");
+        String username = request.getParameter("name");
         String message = request.getParameter("message");
         long timestamp = System.currentTimeMillis();
 
         // Creates database entry Entity and populates its parameters
         Entity commentEntity = new Entity("Comment");
-        commentEntity.setProperty("username", name);
+        commentEntity.setProperty("username", username);
         commentEntity.setProperty("message", message);
         commentEntity.setProperty("timestamp", timestamp);
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
