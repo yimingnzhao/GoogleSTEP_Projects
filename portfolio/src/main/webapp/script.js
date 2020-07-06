@@ -160,7 +160,7 @@ function loadComments(query) {
         var display = '<table>';
         for (var i = 0; i < json.length; i++) {
             display += '<tr><td>';
-            display += '<b>' + json[i].name + ': </b>';
+            display += '<b>' + json[i].username + ': </b>';
             display += json[i].message;
             display += '</tr></td>';
         }
@@ -169,6 +169,10 @@ function loadComments(query) {
     });
 }
 
+/**
+ * Ensures that the name and message fields of the comment are not blank
+ * @return {boolean} Whether the comment is valid or not
+ */
 function validateCommentForm() {
     var name = document.forms['comment-form']['name'].value;
     var message = document.forms['comment-form']['message'].value;
@@ -180,7 +184,21 @@ function validateCommentForm() {
         alert("Message field must be filled out");
         return false;
     }
+
+    // Escapes HTML characters before submitting
+    document.forms['comment-form']['name'].value = escapeHtml(name);
+    document.forms['comment-form']['message'].value = escapeHtml(message);
     return true;
+}
+
+function manageLogin() {
+    fetch('/login').then((response) => response.json()).then((userAuth) => {
+        if (userAuth.isLoggedIn) {
+
+        } else {
+            
+        }
+    });
 }
 
 /**
@@ -190,6 +208,22 @@ function validateCommentForm() {
  */
 function hasOnlyDigits(value) {
     return /^\d+$/.test(value);
+}
+
+/**
+ * Escapes special characters used in HTML
+ * @param {string} text The string to escape HTML characters
+ * @return The text with escaped HTML characters
+ */
+function escapeHtml(text) {
+  var map = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+  };
+  return text.replace(/[&<>"']/g, function(m) { return map[m]; });
 }
 
 
@@ -276,5 +310,7 @@ function hasOnlyDigits(value) {
             });
         });
     });
+
+    manageLogin();
     
  });
