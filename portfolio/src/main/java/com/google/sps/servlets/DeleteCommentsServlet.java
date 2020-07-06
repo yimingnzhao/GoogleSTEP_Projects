@@ -34,6 +34,7 @@ import java.lang.StringBuffer;
 import java.io.BufferedReader;
 import java.util.*;
 
+/** Deletes all comments stored in the database */
 @WebServlet("/delete-data")
 public class DeleteCommentsServlet extends HttpServlet {
 
@@ -93,7 +94,7 @@ public class DeleteCommentsServlet extends HttpServlet {
         try {
             return Long.parseLong(str);
         } catch (NumberFormatException e) {
-            return null;
+            return -1;
         }
     }
 }
