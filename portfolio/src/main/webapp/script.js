@@ -264,7 +264,7 @@ function hasOnlyDigits(value) {
  * @return A boolean whether the input has only digits
  */
 function isAlphanumeric(value) {
-    return /^[0-9a-z]+$/.test(value);
+    return /^[0-9a-zA-Z]+$/.test(value);
 }
 
 /**
