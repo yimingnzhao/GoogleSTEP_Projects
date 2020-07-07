@@ -185,8 +185,14 @@ function validateCommentForm() {
     return true;
 }
 
+/**
+ * Ensures that the display name form is valid
+ * @return {boolean} Whether the display name input is valid or not
+ */
 function validateNameForm() {
     var name = document.forms['display-form']['name'].value;
+
+    // Ensures that the display name is not blank, is less than 20 chars, and is alphanumeric
     if (name == '' || $.trim(name) == '') {
         alert("Display name field must be filled out");
         return false;
@@ -228,13 +234,17 @@ function manageLogin() {
     });
 }
 
+/**
+ * Sets the current display name of the user
+ */
 function showDisplayName() {
     fetch('/user-data').then((response) => response.text()).then((text) => {
         var displayLocation = $('#current-display-name');
         if ($.trim(text) == '') {
             displayLocation.html('You have not set a display name.');
         } else {
-            displayLocation.html('Your current display name is: ' + text);
+            var span = '<span style="font-family: \'Raleway\', sans-serif;color: #807E7E;">' + text + '</span>';
+            displayLocation.html('Your current display name is: ' + span);
         }
     });
 }
@@ -248,6 +258,11 @@ function hasOnlyDigits(value) {
     return /^\d+$/.test(value);
 }
 
+/**
+ * Determines if the input is alphanumeric
+ * @param {string} value The input to check
+ * @return A boolean whether the input has only digits
+ */
 function isAlphanumeric(value) {
     return /^[0-9a-z]+$/.test(value);
 }

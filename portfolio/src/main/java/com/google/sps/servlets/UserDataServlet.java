@@ -37,17 +37,23 @@ import java.util.*;
 /** Servlet that communicates user information */
 @WebServlet("/user-data")
 public class UserDataServlet extends HttpServlet {
-    
+    /**
+     * Gets the potential display name of the current user
+     * @param request The request object 
+     * @param response The response object
+     */
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("text/plain; charset=UTF-8");
 
+        // Breaks from method if the user is not logged in
         UserService userService = UserServiceFactory.getUserService();
         if (!userService.isUserLoggedIn()) {
             response.getWriter().println("");
             return;
         }
 
+        // Queries the current user from the current user id
         String userId = userService.getCurrentUser().getUserId();
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         Filter propertyFilter = new FilterPredicate("id", FilterOperator.EQUAL, userId);
@@ -55,6 +61,7 @@ public class UserDataServlet extends HttpServlet {
         PreparedQuery results = datastore.prepare(query);
         List<Entity> listResults = results.asList(FetchOptions.Builder.withDefaults());
 
+        // Breaks from method if there is not exactly one query result
         if (listResults.size() != 1) {
             response.getWriter().println("");
             return;
@@ -65,12 +72,13 @@ public class UserDataServlet extends HttpServlet {
     }
 
     /**
-     * Modifies display name of current user and changes the user'd database entry
+     * Modifies display name of current user and changes the user's database entry
      * @param request The request object 
      * @param response The response object
      */
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        // Breaks from method if the user is not logged in
         UserService userService = UserServiceFactory.getUserService();
         if (!userService.isUserLoggedIn()) {
             response.sendRedirect("/#comments");
@@ -81,6 +89,7 @@ public class UserDataServlet extends HttpServlet {
         String email = userService.getCurrentUser().getEmail();
         String displayName = request.getParameter("name");
 
+        // Sets the display name of the current user and stores it in the database
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         Entity entity = new Entity("UserData", id);
         entity.setProperty("id", id);

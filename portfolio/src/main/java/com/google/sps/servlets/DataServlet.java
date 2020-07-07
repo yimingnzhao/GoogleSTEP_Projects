@@ -64,6 +64,7 @@ public class DataServlet extends HttpServlet {
             datastoreResults = commentResults.asIterable(FetchOptions.Builder.withLimit(commentLimit));
         }
 
+        // Gets a mapping of user ids to display names from the database
         Map<String, String> userDisplayNames = new HashMap<>();
         Query userQuery = new Query("UserData");
         PreparedQuery userResults = datastore.prepare(userQuery);
@@ -99,6 +100,7 @@ public class DataServlet extends HttpServlet {
      */
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        // Breaks from method if the user is not logged in
         UserService userService = UserServiceFactory.getUserService();
         if (!userService.isUserLoggedIn()) {
             response.sendRedirect("/#comments");
