@@ -330,13 +330,13 @@
                 <h2>Comments</h2>
                 <div id="comments-section">
                     <div id="comments-input" class="comments-div">
-                        <p id="current-display-name">No display name</p>
+                        <p id="current-display-name"></p>
                         <form action="/user-data" name="display-form" onsubmit="return validateNameForm()" method="post">
                             <label for="name">New Display Name: </label>
                             <input type="text" name="name"></input>
                             <input type="submit">
                         </form>
-                        <br>
+                        <br class="hideable-br">
                         <form action="/data" name="comment-form" onsubmit="return validateCommentForm()" method="post">
                             <label for="message">Please leave a comment:</label><br>
                             <textarea name="message" rows="15"></textarea>
@@ -347,15 +347,15 @@
                     </div>
 
                     <div id="comments-display" class="comments-div">
-                        <br>
-                        <br>
-                        <br>
-                        <br>
-                        Filter comments by most recent: 
+                        <br class="hideable-br">
+                        <br class="hideable-br">
+                        <br class="hideable-br">
+                        <label for="limit">Filter most recent:</label>
                         <input type="number" id="comment-limit-input" name="limit" min="1" oninput="validity.valid||(value='');">
                         <button type="button" id="comment-limit-button">Filter</button>
                         <div id="comments-scroll">
                         </div>
+                        <br>
                         <button type="button" id="comment-delete-button">Delete All</button>
                     </div>
                 </div>

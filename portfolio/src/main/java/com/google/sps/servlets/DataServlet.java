@@ -78,7 +78,7 @@ public class DataServlet extends HttpServlet {
         for (Entity entity : datastoreResults) {
             long id = entity.getKey().getId();
             String userId = (String) entity.getProperty("userId");
-            String username = userDisplayNames.getOrDefault(userId, "User");
+            String username = userDisplayNames.getOrDefault(userId, "Anon. User");
             String message = (String) entity.getProperty("message");
             long timestamp = (long) entity.getProperty("timestamp");
 

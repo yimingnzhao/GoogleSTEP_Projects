@@ -208,19 +208,33 @@ function manageLogin() {
     // Fetches the current login status and changes html based on the status
     fetch('/login').then((response) => response.json()).then((userAuth) => {
         if (userAuth.isLoggedIn) {
-            //$('#comments-input').find('form').find('#comment-form-name-input').val(userAuth.userEmail);
-
             var breaks = '<br><br>';
             var logoutButton = '<button onclick="document.location=\'' + userAuth.logoutURL + '\'">Logout</button>';
             $('#comments-input').append(breaks);
             $('#comments-input').append(logoutButton);
+            showDisplayName();
         } else {
-            var loginDiv = '<div><p>Please login to comment</p>';
-            loginDiv += '<button onclick="document.location=\'' + userAuth.loginURL + '\'">Login</button';
-            loginDiv += '</div>';
+            var br = '<br>';
+            var loginText = '<p>Please login to comment</p>';
+            var loginButton = '<button onclick="document.location=\'' + userAuth.loginURL + '\'">Login</button';
             $('#comments-input').find('#current-display-name').hide();
             $('#comments-input').find('form').hide();
-            $('#comments-input').append(loginDiv);
+            $('.hideable-br').hide();
+            $('#comments-input').append(loginText);
+            $('#comments-input').append(loginButton);
+            $('#comments-display').prepend(br);
+            $('.comments-div').css('height', 'auto');
+        }
+    });
+}
+
+function showDisplayName() {
+    fetch('/user-data').then((response) => response.text()).then((text) => {
+        var displayLocation = $('#current-display-name');
+        if ($.trim(text) == '') {
+            displayLocation.html('You have not set a display name.');
+        } else {
+            displayLocation.html('Your current display name is: ' + text);
         }
     });
 }

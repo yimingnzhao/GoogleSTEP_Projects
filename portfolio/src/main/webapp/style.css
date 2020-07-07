@@ -303,6 +303,14 @@ div#nav-content {
     height: 450px;
 }
 
+#comments-input {
+    padding-right: 20px;
+}
+
+#comments-display {
+    padding-left: 20px;
+}
+
 #comments-input > form > textarea {
     resize: none;
     width: 100%;  
@@ -315,7 +323,7 @@ div#nav-content {
 }
 
 #comments-scroll {
-    height: 250px;
+    height: 270px;
     overflow: scroll;
 }
 

@@ -24,12 +24,45 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.Filter;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.gson.Gson;
 import com.google.sps.data.UserAuth;
+import java.util.*;
 
 /** Servlet that communicates user information */
 @WebServlet("/user-data")
 public class UserDataServlet extends HttpServlet {
+    
+    @Override
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setContentType("text/plain; charset=UTF-8");
+
+        UserService userService = UserServiceFactory.getUserService();
+        if (!userService.isUserLoggedIn()) {
+            response.getWriter().println("");
+            return;
+        }
+
+        String userId = userService.getCurrentUser().getUserId();
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        Filter propertyFilter = new FilterPredicate("id", FilterOperator.EQUAL, userId);
+        Query query = new Query("UserData").setFilter(propertyFilter);
+        PreparedQuery results = datastore.prepare(query);
+        List<Entity> listResults = results.asList(FetchOptions.Builder.withDefaults());
+
+        if (listResults.size() != 1) {
+            response.getWriter().println("");
+            return;
+        } 
+
+        String displayName = (String) listResults.get(0).getProperty("displayName");
+        response.getWriter().println(displayName);
+    }
 
     /**
      * Modifies display name of current user and changes the user'd database entry
@@ -55,6 +88,6 @@ public class UserDataServlet extends HttpServlet {
         entity.setProperty("email", email);
         datastore.put(entity);
 
-        response.sendRedirect("/");
+        response.sendRedirect("/#comments");
     }
 }
