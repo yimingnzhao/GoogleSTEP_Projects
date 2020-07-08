@@ -22,6 +22,16 @@ const TYPEWRITER_TEXT = new Map([
     ['philosophers,', 'a virture seeker'],
 ]);
 
+// URL and Pokemon types for fetching data from PokeAPI
+const POKEAPI_TYPE_URL = 'https://pokeapi.co/api/v2/type/';
+const POKEMON_TYPES = [
+    'normal', 'fire', 'fighting', 'water',
+    'flying', 'grass', 'poison', 'electric',
+    'ground', 'psychic', 'rock', 'ice',
+    'bug', 'dragon', 'ghost', 'dark', 
+    'steel', 'fairy'
+];
+
 
 /**
  * Adds a random greeting to the page.
@@ -181,7 +191,7 @@ function validateCommentForm() {
     }
 
     // Escapes HTML characters before submitting
-    document.forms['comment-form']['message'].value = escapeHtml(message);
+    //document.forms['comment-form']['message'].value = escapeHtml(message);
     return true;
 }
 
@@ -283,28 +293,51 @@ function escapeHtml(text) {
   return text.replace(/[&<>"']/g, function(m) { return map[m]; });
 }
 
+/**
+ * Fetches data and plots the type distribution of Pokemon and moves
+ */
+function drawPokemonDataCharts() {
+    // Creates array of all API fetches
+    var fetches = [];
+    POKEMON_TYPES.forEach((type) => {
+        fetches.push(fetch(POKEAPI_TYPE_URL + type));
+    });
 
-function drawChart() {
-    const data = new google.visualization.DataTable();
-    data.addColumn('string', 'Animal');
-    data.addColumn('number', 'Count');
-    data.addRows([
-        ['Lions', 10],
-        ['Tigers', 5],
-        ['Bears', 15]
-    ]);
+    // Waits for all fetches to be complete, then creates the graphs
+    Promise.all(fetches).then((responses) => {
+        return Promise.all(responses.map((response) => {
+            return response.json();
+        }));
+    }).then((data) => {
+        const pokemonTable = new google.visualization.DataTable();
+        const movesTable = new google.visualization.DataTable();
 
-    const options = {
-        'title': 'Zoo Animals',
-        'width':500,
-        'height':400
-    };
+        pokemonTable.addColumn('string', 'Type');
+        pokemonTable.addColumn('number', 'Count');
+        movesTable.addColumn('string', 'Type');
+        movesTable.addColumn('number', 'Count');
 
-    const chart = new google.visualization.PieChart(
-        document.getElementById('chart-container'));
-    chart.draw(data, options);
+        data.forEach((typeData) => {
+            pokemonTable.addRow([typeData.name, typeData.pokemon.length]);
+            movesTable.addRow([typeData.name, typeData.moves.length]);
+        });
+
+        var pokemonOptions = {
+            title: 'Pokemon Species of Each Type',
+        }
+
+        var movesOptions = {
+            title: 'Pokemon Moves of Each Type',
+        }
+
+        var pokemonChartDiv = document.getElementById('pokemon-chart');
+        const pokemonChart = new google.visualization.PieChart(pokemonChartDiv);
+        pokemonChart.draw(pokemonTable, pokemonOptions);
+        var movesChartDiv = document.getElementById('moves-chart');
+        const movesChart = new google.visualization.PieChart(movesChartDiv);
+        movesChart.draw(movesTable, movesOptions);
+    });
 }
-
 
 /**
  * Executes when document is loaded
@@ -393,6 +426,6 @@ function drawChart() {
     manageLogin();
 
     google.charts.load('current', {'packages':['corechart']});
-    google.charts.setOnLoadCallback(drawChart);
+    google.charts.setOnLoadCallback(drawPokemonDataCharts);
     
  });
