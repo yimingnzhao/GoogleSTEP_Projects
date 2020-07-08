@@ -31,6 +31,13 @@ const POKEMON_TYPES = [
     'bug', 'dragon', 'ghost', 'dark', 
     'steel', 'fairy'
 ];
+const POKEMON_TYPE_COLORS = [
+    '#999999', '#ff3300', '#990000', '#3385ff',
+    '#ccccff', '#33cc33', '#9900cc', '#ffff66',
+    '#e6ac00', '#cc66ff', '#cc8800', '#b3ecff',
+    '#99cc00', '#6666ff', '#666699', '#595959',
+    '#d0d0e1', '#ffccff'
+];
 
 
 /**
@@ -324,10 +331,12 @@ function drawPokemonDataCharts() {
 
         var pokemonOptions = {
             title: 'Pokemon Species of Each Type',
+            colors: POKEMON_TYPE_COLORS,
         }
 
         var movesOptions = {
             title: 'Pokemon Moves of Each Type',
+            colors: POKEMON_TYPE_COLORS,
         }
 
         var pokemonChartDiv = document.getElementById('pokemon-chart');
