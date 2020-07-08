@@ -33,7 +33,7 @@ const POKEMON_TYPES = [
 ];
 const POKEMON_TYPE_COLORS = [
     '#999999', '#ff3300', '#990000', '#3385ff',
-    '#ccccff', '#33cc33', '#9900cc', '#ffff66',
+    '#ccccff', '#33cc33', '#9900cc', '#ffd11a',
     '#e6ac00', '#cc66ff', '#cc8800', '#b3ecff',
     '#99cc00', '#6666ff', '#666699', '#595959',
     '#d0d0e1', '#ffccff'
@@ -316,29 +316,33 @@ function drawPokemonDataCharts() {
             return response.json();
         }));
     }).then((data) => {
+        // Sets up tables to insert data to graph
         const pokemonTable = new google.visualization.DataTable();
         const movesTable = new google.visualization.DataTable();
-
         pokemonTable.addColumn('string', 'Type');
         pokemonTable.addColumn('number', 'Count');
         movesTable.addColumn('string', 'Type');
         movesTable.addColumn('number', 'Count');
 
+        // Data insertion into the two tables
         data.forEach((typeData) => {
             pokemonTable.addRow([typeData.name, typeData.pokemon.length]);
             movesTable.addRow([typeData.name, typeData.moves.length]);
         });
 
+        // Specifies the options of each graph and plots it in the given div
         var pokemonOptions = {
             title: 'Pokemon Species of Each Type',
             colors: POKEMON_TYPE_COLORS,
+            chartArea: {'width': '80%', 'height': '80%'},
+            legend: {'position':'right','alignment':'center'},
         }
-
         var movesOptions = {
             title: 'Pokemon Moves of Each Type',
             colors: POKEMON_TYPE_COLORS,
+            chartArea: {'width': '80%', 'height': '80%'},
+            legend: {'position':'right','alignment':'center'},
         }
-
         var pokemonChartDiv = document.getElementById('pokemon-chart');
         const pokemonChart = new google.visualization.PieChart(pokemonChartDiv);
         pokemonChart.draw(pokemonTable, pokemonOptions);

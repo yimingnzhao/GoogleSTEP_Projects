@@ -353,10 +353,16 @@ tr:nth-child(even) {background-color: #f2f2f2;}
     clear: both;
 }
 
+#chart-container > p {
+    padding-left: 5%;
+    padding-right: 5%;
+}
+
 .chart-div {
     float: left;
     width: 50%;
     padding: 15px;
+    padding-top: 0px;
     height: 700px;
 }
 
