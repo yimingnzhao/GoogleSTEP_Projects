@@ -300,7 +300,15 @@ div#nav-content {
     float: left;
     width: 50%;
     padding: 15px;
-    height: 350px;
+    height: 450px;
+}
+
+#comments-input {
+    padding-right: 20px;
+}
+
+#comments-display {
+    padding-left: 20px;
 }
 
 #comments-input > form > textarea {
@@ -315,7 +323,7 @@ div#nav-content {
 }
 
 #comments-scroll {
-    height: 230px;
+    height: 270px;
     overflow: scroll;
 }
 

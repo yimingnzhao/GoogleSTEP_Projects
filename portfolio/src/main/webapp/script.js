@@ -169,21 +169,84 @@ function loadComments(query) {
     });
 }
 
+/**
+ * Ensures that the message field of the comment is not blank
+ * @return {boolean} Whether the comment is valid or not
+ */
 function validateCommentForm() {
-    var name = document.forms['comment-form']['name'].value;
     var message = document.forms['comment-form']['message'].value;
-    if (name == '' || $.trim(name) == '') {
-        alert("Name field must be filled out");
-        return false;
-    }
     if (message == '' || $.trim(message) == '') {
         alert("Message field must be filled out");
         return false;
     }
 
-    document.forms['comment-form']['name'].value = escapeHtml(name);
+    // Escapes HTML characters before submitting
     document.forms['comment-form']['message'].value = escapeHtml(message);
     return true;
+}
+
+/**
+ * Ensures that the display name form is valid
+ * @return {boolean} Whether the display name input is valid or not
+ */
+function validateNameForm() {
+    var name = document.forms['display-form']['name'].value;
+
+    // Ensures that the display name is not blank, is less than 20 chars, and is alphanumeric
+    if (name == '' || $.trim(name) == '') {
+        alert("Display name field must be filled out");
+        return false;
+    } else if ($.trim(name).length > 20) {
+        alert("Display name can be at most 20 characters");
+        return false;
+    } else if (!isAlphanumeric($.trim(name))) {
+        alert("Display name must be alphanumeric");
+        return false;
+    } 
+    document.forms['display-form']['name'].value = $.trim(name);
+    return true;
+}
+
+/**
+ * Edits the comment section based on current login status
+ */
+function manageLogin() {
+    // Fetches the current login status and changes html based on the status
+    fetch('/login').then((response) => response.json()).then((userAuth) => {
+        if (userAuth.isLoggedIn) {
+            var breaks = '<br><br>';
+            var logoutButton = '<button onclick="document.location=\'' + userAuth.logoutURL + '\'">Logout</button>';
+            $('#comments-input').append(breaks);
+            $('#comments-input').append(logoutButton);
+            showDisplayName();
+        } else {
+            var br = '<br>';
+            var loginText = '<p>Please login to comment</p>';
+            var loginButton = '<button onclick="document.location=\'' + userAuth.loginURL + '\'">Login</button';
+            $('#comments-input').find('#current-display-name').hide();
+            $('#comments-input').find('form').hide();
+            $('.hideable-br').hide();
+            $('#comments-input').append(loginText);
+            $('#comments-input').append(loginButton);
+            $('#comments-display').prepend(br);
+            $('.comments-div').css('height', 'auto');
+        }
+    });
+}
+
+/**
+ * Sets the current display name of the user
+ */
+function showDisplayName() {
+    fetch('/user-data').then((response) => response.text()).then((text) => {
+        var displayLocation = $('#current-display-name');
+        if ($.trim(text) == '') {
+            displayLocation.html('You have not set a display name.');
+        } else {
+            var span = '<span style="font-family: \'Raleway\', sans-serif;color: #807E7E;">' + text + '</span>';
+            displayLocation.html('Your current display name is: ' + span);
+        }
+    });
 }
 
 /**
@@ -195,6 +258,20 @@ function hasOnlyDigits(value) {
     return /^\d+$/.test(value);
 }
 
+/**
+ * Determines if the input is alphanumeric
+ * @param {string} value The input to check
+ * @return A boolean whether the input has only digits
+ */
+function isAlphanumeric(value) {
+    return /^[0-9a-zA-Z]+$/.test(value);
+}
+
+/**
+ * Escapes special characters used in HTML
+ * @param {string} text The string to escape HTML characters
+ * @return The text with escaped HTML characters
+ */
 function escapeHtml(text) {
   var map = {
     '&': '&amp;',
@@ -203,8 +280,29 @@ function escapeHtml(text) {
     '"': '&quot;',
     "'": '&#039;'
   };
-  
   return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+}
+
+
+function drawChart() {
+    const data = new google.visualization.DataTable();
+    data.addColumn('string', 'Animal');
+    data.addColumn('number', 'Count');
+    data.addRows([
+        ['Lions', 10],
+        ['Tigers', 5],
+        ['Bears', 15]
+    ]);
+
+    const options = {
+        'title': 'Zoo Animals',
+        'width':500,
+        'height':400
+    };
+
+    const chart = new google.visualization.PieChart(
+        document.getElementById('chart-container'));
+    chart.draw(data, options);
 }
 
 
@@ -291,5 +389,10 @@ function escapeHtml(text) {
             });
         });
     });
+
+    manageLogin();
+
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
     
  });
