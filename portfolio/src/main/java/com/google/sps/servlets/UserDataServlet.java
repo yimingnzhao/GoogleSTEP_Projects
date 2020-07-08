@@ -37,6 +37,16 @@ import java.util.*;
 /** Servlet that communicates user information */
 @WebServlet("/user-data")
 public class UserDataServlet extends HttpServlet {
+
+    private static final String RESPONSE_TEXT_CONTENT = "text/plain; charset=UTF-8";
+    private static final String EMPTY_RESPONSE = "";
+    private static final String DATASTORE_USER_DATA_KIND = "UserData";
+    private static final String DATASTORE_USER_DATA_ID_PARAM = "id";
+    private static final String DATASTORE_USER_DATA_NAME_PARAM = "displayName";
+    private static final String DATASTORE_USER_DATA_EMAIL_PARAM = "email"; 
+    private static final String REQUEST_NAME_PARAM = "name";
+    private static final String REDIRECT_URL = "/#comments";
+
     /**
      * Gets the potential display name of the current user
      * @param request The request object 
@@ -44,30 +54,30 @@ public class UserDataServlet extends HttpServlet {
      */
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("text/plain; charset=UTF-8");
+        response.setContentType(RESPONSE_TEXT_CONTENT);
 
         // Breaks from method if the user is not logged in
         UserService userService = UserServiceFactory.getUserService();
         if (!userService.isUserLoggedIn()) {
-            response.getWriter().println("");
+            response.getWriter().println(EMPTY_RESPONSE);
             return;
         }
 
         // Queries the current user from the current user id
         String userId = userService.getCurrentUser().getUserId();
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-        Filter propertyFilter = new FilterPredicate("id", FilterOperator.EQUAL, userId);
-        Query query = new Query("UserData").setFilter(propertyFilter);
+        Filter propertyFilter = new FilterPredicate(DATASTORE_USER_DATA_ID_PARAM, FilterOperator.EQUAL, userId);
+        Query query = new Query(DATASTORE_USER_DATA_KIND).setFilter(propertyFilter);
         PreparedQuery results = datastore.prepare(query);
         List<Entity> listResults = results.asList(FetchOptions.Builder.withDefaults());
 
         // Breaks from method if there is not exactly one query result
         if (listResults.size() != 1) {
-            response.getWriter().println("");
+            response.getWriter().println(EMPTY_RESPONSE);
             return;
         } 
 
-        String displayName = (String) listResults.get(0).getProperty("displayName");
+        String displayName = (String) listResults.get(0).getProperty(DATASTORE_USER_DATA_NAME_PARAM);
         response.getWriter().println(displayName);
     }
 
@@ -81,22 +91,22 @@ public class UserDataServlet extends HttpServlet {
         // Breaks from method if the user is not logged in
         UserService userService = UserServiceFactory.getUserService();
         if (!userService.isUserLoggedIn()) {
-            response.sendRedirect("/#comments");
+            response.sendRedirect(REDIRECT_URL);
             return;
         }
 
         String id = userService.getCurrentUser().getUserId();
         String email = userService.getCurrentUser().getEmail();
-        String displayName = request.getParameter("name");
+        String displayName = request.getParameter(REQUEST_NAME_PARAM);
 
         // Sets the display name of the current user and stores it in the database
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-        Entity entity = new Entity("UserData", id);
-        entity.setProperty("id", id);
-        entity.setProperty("displayName", displayName);
-        entity.setProperty("email", email);
+        Entity entity = new Entity(DATASTORE_USER_DATA_KIND, id);
+        entity.setProperty(DATASTORE_USER_DATA_ID_PARAM, id);
+        entity.setProperty(DATASTORE_USER_DATA_NAME_PARAM, displayName);
+        entity.setProperty(DATASTORE_USER_DATA_EMAIL_PARAM, email);
         datastore.put(entity);
 
-        response.sendRedirect("/#comments");
+        response.sendRedirect(REDIRECT_URL);
     }
 }

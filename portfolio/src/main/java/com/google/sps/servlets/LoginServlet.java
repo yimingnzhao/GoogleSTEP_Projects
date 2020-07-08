@@ -28,6 +28,13 @@ import com.google.sps.data.UserAuth;
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
 
+    private static final boolean USER_LOGGED_IN = true;
+    private static final boolean USER_LOGGED_OUT = false;
+    private static final String REDIRECT_URL_AFTER_LOGIN = "/";
+    private static final String REDIRECT_URL_AFTER_LOGOUT = "/";
+    private static final String UNUSED_USER_AUTH_PARAM = "";
+    private static final String RESPONSE_JSON_CONTENT = "application/json;";
+
     /**
      * Gets current login status
      * @param request The request object 
@@ -41,18 +48,16 @@ public class LoginServlet extends HttpServlet {
         // Sets parameters of the UserAuth object based on current login status
         if (userService.isUserLoggedIn()) {
             String userEmail = userService.getCurrentUser().getEmail();
-            String urlToRedirectToAfterUserLogsOut = "/";
-            String logoutUrl = userService.createLogoutURL(urlToRedirectToAfterUserLogsOut);
-            userAuth = new UserAuth(true, "", logoutUrl, userEmail);
+            String logoutUrl = userService.createLogoutURL(REDIRECT_URL_AFTER_LOGOUT);
+            userAuth = new UserAuth(USER_LOGGED_IN, UNUSED_USER_AUTH_PARAM, logoutUrl, userEmail);
         } else {
-            String urlToRedirectToAfterUserLogsIn = "/";
-            String loginUrl = userService.createLoginURL(urlToRedirectToAfterUserLogsIn);
-            userAuth = new UserAuth(false, loginUrl, "", "");
+            String loginUrl = userService.createLoginURL(REDIRECT_URL_AFTER_LOGIN);
+            userAuth = new UserAuth(USER_LOGGED_OUT, loginUrl, UNUSED_USER_AUTH_PARAM, UNUSED_USER_AUTH_PARAM);
         }
 
         // Converts object to JSON and returns to front-end
         Gson gson = new Gson();
-        response.setContentType("application/json;");
+        response.setContentType(RESPONSE_JSON_CONTENT);
         response.getWriter().println(gson.toJson(userAuth));
     }
 }

@@ -38,6 +38,20 @@ import java.util.*;
 public class DataServlet extends HttpServlet {
 
     private static final int NO_MAX_COMMENT_LIMIT = -1;
+    private static final String DEFAULT_DISPLAY_NAME = "Anon. User";
+    private static final String RESPONSE_JSON_CONTENT = "application/json;";
+    private static final String REQUEST_COMMENT_LIMIT_PARAM = "limit";
+    private static final String DATASTORE_COMMENT_KIND = "Comment";
+    private static final String DATASTORE_COMMENT_TIMESTAMP_PARAM = "timestamp";
+    private static final String DATASTORE_COMMENT_USER_ID_PARAM = "userId";
+    private static final String DATASTORE_COMMENT_MESSAGE_PARAM = "message";
+    private static final String DATASTORE_USER_DATA_KIND = "UserData";
+    private static final String DATASTORE_USER_DATA_ID_PARAM = "id";
+    private static final String DATASTORE_USER_DATA_NAME_PARAM = "displayName";
+    private static final String REDIRECT_URL = "/#comments";
+
+
+
 
     /**
      * Gets database data for comments
@@ -47,14 +61,14 @@ public class DataServlet extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         // Gets possible limit to the maximum number of comments  
-        String commentLimitString = request.getParameter("limit");
+        String commentLimitString = request.getParameter(REQUEST_COMMENT_LIMIT_PARAM);
         int commentLimit = tryParseInt(commentLimitString);
         if (commentLimit <= 0) {
             commentLimit = NO_MAX_COMMENT_LIMIT;
         }
 
         // Gets list of most recent comments, based on the limit
-        Query commentQuery = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
+        Query commentQuery = new Query(DATASTORE_COMMENT_KIND).addSort(DATASTORE_COMMENT_TIMESTAMP_PARAM, SortDirection.DESCENDING);
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         PreparedQuery commentResults = datastore.prepare(commentQuery);
         Iterable<Entity> datastoreResults = null;
@@ -66,11 +80,11 @@ public class DataServlet extends HttpServlet {
 
         // Gets a mapping of user ids to display names from the database
         Map<String, String> userDisplayNames = new HashMap<>();
-        Query userQuery = new Query("UserData");
+        Query userQuery = new Query(DATASTORE_USER_DATA_KIND);
         PreparedQuery userResults = datastore.prepare(userQuery);
         for (Entity entity : userResults.asIterable()) {
-            String userId = (String) entity.getProperty("id");
-            String displayName = (String) entity.getProperty("displayName");
+            String userId = (String) entity.getProperty(DATASTORE_USER_DATA_ID_PARAM);
+            String displayName = (String) entity.getProperty(DATASTORE_USER_DATA_NAME_PARAM);
             userDisplayNames.put(userId, displayName);
         }
 
@@ -78,10 +92,10 @@ public class DataServlet extends HttpServlet {
         List<Comment> comments = new ArrayList<>();
         for (Entity entity : datastoreResults) {
             long id = entity.getKey().getId();
-            String userId = (String) entity.getProperty("userId");
-            String username = userDisplayNames.getOrDefault(userId, "Anon. User");
-            String message = (String) entity.getProperty("message");
-            long timestamp = (long) entity.getProperty("timestamp");
+            String userId = (String) entity.getProperty(DATASTORE_COMMENT_USER_ID_PARAM);
+            String username = userDisplayNames.getOrDefault(userId, DEFAULT_DISPLAY_NAME);
+            String message = (String) entity.getProperty(DATASTORE_COMMENT_MESSAGE_PARAM);
+            long timestamp = (long) entity.getProperty(DATASTORE_COMMENT_TIMESTAMP_PARAM);
 
             Comment comment = new Comment(id, username, message, timestamp);
             comments.add(comment);
@@ -89,7 +103,7 @@ public class DataServlet extends HttpServlet {
         
         // Converts object to JSON and returns to front-end
         Gson gson = new Gson();
-        response.setContentType("application/json;");
+        response.setContentType(RESPONSE_JSON_CONTENT);
         response.getWriter().println(gson.toJson(comments));
     }
 
@@ -103,24 +117,24 @@ public class DataServlet extends HttpServlet {
         // Breaks from method if the user is not logged in
         UserService userService = UserServiceFactory.getUserService();
         if (!userService.isUserLoggedIn()) {
-            response.sendRedirect("/#comments");
+            response.sendRedirect(REDIRECT_URL);
             return;
         }
 
         String userId = userService.getCurrentUser().getUserId();
         String userEmail = userService.getCurrentUser().getEmail();
-        String message = request.getParameter("message");
+        String message = request.getParameter(DATASTORE_COMMENT_MESSAGE_PARAM);
         long timestamp = System.currentTimeMillis();
 
         // Creates database entry Entity and populates its parameters
-        Entity commentEntity = new Entity("Comment");
-        commentEntity.setProperty("userId", userId);
-        commentEntity.setProperty("message", message);
-        commentEntity.setProperty("timestamp", timestamp);
+        Entity commentEntity = new Entity(DATASTORE_COMMENT_KIND);
+        commentEntity.setProperty(DATASTORE_COMMENT_USER_ID_PARAM, userId);
+        commentEntity.setProperty(DATASTORE_COMMENT_MESSAGE_PARAM, message);
+        commentEntity.setProperty(DATASTORE_COMMENT_TIMESTAMP_PARAM, timestamp);
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         datastore.put(commentEntity);
 
-        response.sendRedirect("/#comments");
+        response.sendRedirect(REDIRECT_URL);
     }
 
     /**

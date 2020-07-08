@@ -39,6 +39,12 @@ import java.util.*;
 public class DeleteCommentsServlet extends HttpServlet {
 
     private static final long PARSE_LONG_EXCEPTION = -1;
+    private static final String REQUEST_STRING_DELIMITER = ",";
+    private static final String READ_REQUEST_EXCEPTION_MSG = "Exception: Failed to read request data";
+    private static final String PARSE_LONG_EXCEPTION_MSG = "Exception: Unable to parse comment id as long";
+    private static final String FIND_DATASTORE_ENTITY_EXCEPTION_MSG = "Exception: Entity of given comment id cannot be found";
+    private static final String DATASTORE_COMMENT_KIND = "Comment";
+    private static final String REDIRECT_URL = "/";
 
     /**
      * Adds comment data to database
@@ -58,31 +64,31 @@ public class DeleteCommentsServlet extends HttpServlet {
                 buffer.append(line); 
             }
         } catch (Exception e) {
-            System.out.println("Exception: Failed to read request data");
+            System.out.println(READ_REQUEST_EXCEPTION_MSG);
             return;
         }
 
         // Buffer string should be a list of ids seperated by the comma character
-        String[] commentIds = buffer.toString().split(",");
+        String[] commentIds = buffer.toString().split(REQUEST_STRING_DELIMITER);
 
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         for (String id : commentIds) {
             long numId = tryParseLong(id);
             if (numId == PARSE_LONG_EXCEPTION) {
-                System.out.println("Exception: Unable to parse comment id as long");
+                System.out.println(PARSE_LONG_EXCEPTION_MSG);
                 continue;
             }
             // Creates a datastore Key object for the comment id to delete the key
-            Key key = KeyFactory.createKey("Comment", numId);
+            Key key = KeyFactory.createKey(DATASTORE_COMMENT_KIND, numId);
             try {
                 Entity exist = datastore.get(key);
             } catch (Exception e) {
-                System.out.println("Exception: Entity of given comment id cannot be found");
+                System.out.println(FIND_DATASTORE_ENTITY_EXCEPTION_MSG);
                 continue;
             }
             datastore.delete(key);
         }
-        response.sendRedirect("/"); 
+        response.sendRedirect(REDIRECT_URL); 
     }
 
     /**
