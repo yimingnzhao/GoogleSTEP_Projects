@@ -357,6 +357,12 @@ tr:nth-child(even) {background-color: #f2f2f2;}
     float: left;
     width: 50%;
     padding: 15px;
-    height: 450px;
+    height: 700px;
+}
+
+@media screen and (max-width: 1200px) {
+  .chart-div {
+    width: 100%;
+  }
 }
 /* End styles for pie charts */
