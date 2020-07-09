@@ -65,6 +65,10 @@ img.modal-btn {
     position: absolute; 
 }
 
+.slideshow-img {
+    bottom: 0px;
+}
+
 #greeting-container {
     margin-top: 20px;
 }
@@ -287,7 +291,6 @@ div#nav-content {
 /* Begin styles for comments section */
 #comments-section {
     box-sizing: border-box;
-
 }
 
 #comments-section:after {
@@ -338,3 +341,34 @@ table {
 
 tr:nth-child(even) {background-color: #f2f2f2;}
 /* End styles for comments section */
+
+/* Begin styles for pie charts */
+#chart-container {
+    box-sizing: border-box;
+}
+
+#chart-container:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+#chart-container > p {
+    padding-left: 5%;
+    padding-right: 5%;
+}
+
+.chart-div {
+    float: left;
+    width: 50%;
+    padding: 15px;
+    padding-top: 0px;
+    height: 700px;
+}
+
+@media screen and (max-width: 1200px) {
+  .chart-div {
+    width: 100%;
+  }
+}
+/* End styles for pie charts */

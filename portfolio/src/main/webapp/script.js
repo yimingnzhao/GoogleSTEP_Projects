@@ -22,6 +22,23 @@ const TYPEWRITER_TEXT = new Map([
     ['philosophers,', 'a virture seeker'],
 ]);
 
+// URL and Pokemon types for fetching data from PokeAPI
+const POKEAPI_TYPE_URL = 'https://pokeapi.co/api/v2/type/';
+const POKEMON_TYPES = [
+    'normal', 'fire', 'fighting', 'water',
+    'flying', 'grass', 'poison', 'electric',
+    'ground', 'psychic', 'rock', 'ice',
+    'bug', 'dragon', 'ghost', 'dark', 
+    'steel', 'fairy'
+];
+const POKEMON_TYPE_COLORS = [
+    '#999999', '#ff3300', '#990000', '#3385ff',
+    '#ccccff', '#33cc33', '#9900cc', '#ffd11a',
+    '#e6ac00', '#cc66ff', '#cc8800', '#b3ecff',
+    '#99cc00', '#6666ff', '#666699', '#595959',
+    '#d0d0e1', '#ffccff'
+];
+
 
 /**
  * Adds a random greeting to the page.
@@ -161,11 +178,17 @@ function loadComments(query) {
         for (var i = 0; i < json.length; i++) {
             display += '<tr><td>';
             display += '<b>' + json[i].username + ': </b>';
-            display += json[i].message;
+            display += '<span class="message-text">' + json[i].message + '</span>';
             display += '</tr></td>';
         }
         display += '</table>';
         $('#comments-scroll').html(display);
+        
+        // Continues to use current language code selection
+        var currentLanguageCode = $('#language-select').val();
+        if (currentLanguageCode != 'en') {
+            translateComments(currentLanguageCode);
+        }
     });
 }
 
@@ -181,7 +204,7 @@ function validateCommentForm() {
     }
 
     // Escapes HTML characters before submitting
-    document.forms['comment-form']['message'].value = escapeHtml(message);
+    //document.forms['comment-form']['message'].value = escapeHtml(message);
     return true;
 }
 
@@ -283,28 +306,79 @@ function escapeHtml(text) {
   return text.replace(/[&<>"']/g, function(m) { return map[m]; });
 }
 
+/**
+ * Fetches data and plots the type distribution of Pokemon and moves
+ */
+function drawPokemonDataCharts() {
+    // Creates array of all API fetches
+    var fetches = [];
+    POKEMON_TYPES.forEach((type) => {
+        fetches.push(fetch(POKEAPI_TYPE_URL + type));
+    });
 
-function drawChart() {
-    const data = new google.visualization.DataTable();
-    data.addColumn('string', 'Animal');
-    data.addColumn('number', 'Count');
-    data.addRows([
-        ['Lions', 10],
-        ['Tigers', 5],
-        ['Bears', 15]
-    ]);
+    // Waits for all fetches to be complete, then creates the graphs
+    Promise.all(fetches).then((responses) => {
+        return Promise.all(responses.map((response) => {
+            return response.json();
+        }));
+    }).then((data) => {
+        // Sets up tables to insert data to graph
+        const pokemonTable = new google.visualization.DataTable();
+        const movesTable = new google.visualization.DataTable();
+        pokemonTable.addColumn('string', 'Type');
+        pokemonTable.addColumn('number', 'Count');
+        movesTable.addColumn('string', 'Type');
+        movesTable.addColumn('number', 'Count');
 
-    const options = {
-        'title': 'Zoo Animals',
-        'width':500,
-        'height':400
-    };
+        // Data insertion into the two tables
+        data.forEach((typeData) => {
+            pokemonTable.addRow([typeData.name, typeData.pokemon.length]);
+            movesTable.addRow([typeData.name, typeData.moves.length]);
+        });
 
-    const chart = new google.visualization.PieChart(
-        document.getElementById('chart-container'));
-    chart.draw(data, options);
+        // Specifies the options of each graph and plots it in the given div
+        var pokemonOptions = {
+            title: 'Pokemon Species of Each Type',
+            colors: POKEMON_TYPE_COLORS,
+            chartArea: {'width': '80%', 'height': '80%'},
+            legend: {'position':'right','alignment':'center'},
+        }
+        var movesOptions = {
+            title: 'Pokemon Moves of Each Type',
+            colors: POKEMON_TYPE_COLORS,
+            chartArea: {'width': '80%', 'height': '80%'},
+            legend: {'position':'right','alignment':'center'},
+        }
+        var pokemonChartDiv = document.getElementById('pokemon-chart');
+        const pokemonChart = new google.visualization.PieChart(pokemonChartDiv);
+        pokemonChart.draw(pokemonTable, pokemonOptions);
+        var movesChartDiv = document.getElementById('moves-chart');
+        const movesChart = new google.visualization.PieChart(movesChartDiv);
+        movesChart.draw(movesTable, movesOptions);
+    });
 }
 
+/**
+ * Translates the comments backend fetches
+ * @param {String} languageCode The language code to translate to
+ */
+function translateComments(languageCode) {
+    // Gets all message texts and performs a fetch for each message
+    $('.message-text').each((index, value) => {
+        var message = value.innerText;
+        value.innerText = 'Loading...';
+        const params = new URLSearchParams();
+        params.append('message', message);
+        params.append('languageCode', languageCode);
+
+        fetch('/translate', {
+            method: 'POST',
+            body: params,
+        }).then((response) => response.text()).then((translatedMessage) => {
+            value.innerText = translatedMessage;
+        }); 
+    });
+}
 
 /**
  * Executes when document is loaded
@@ -390,9 +464,16 @@ function drawChart() {
         });
     });
 
+    // Google Authentication API 
     manageLogin();
 
+    // Google Chart API
     google.charts.load('current', {'packages':['corechart']});
-    google.charts.setOnLoadCallback(drawChart);
+    google.charts.setOnLoadCallback(drawPokemonDataCharts);
+
+    // Google Translation API
+    $('#language-select').change(function() {
+        translateComments($(this).val());
+    });
     
  });
