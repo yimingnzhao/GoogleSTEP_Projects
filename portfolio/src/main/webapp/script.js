@@ -178,11 +178,17 @@ function loadComments(query) {
         for (var i = 0; i < json.length; i++) {
             display += '<tr><td>';
             display += '<b>' + json[i].username + ': </b>';
-            display += json[i].message;
+            display += '<span class="message-text">' + json[i].message + '</span>';
             display += '</tr></td>';
         }
         display += '</table>';
         $('#comments-scroll').html(display);
+        
+        // Continues to use current language code selection
+        var currentLanguageCode = $('#language-select').val();
+        if (currentLanguageCode != 'en') {
+            translateComments(currentLanguageCode);
+        }
     });
 }
 
@@ -353,6 +359,28 @@ function drawPokemonDataCharts() {
 }
 
 /**
+ * Translates the comments backend fetches
+ * @param {String} languageCode The language code to translate to
+ */
+function translateComments(languageCode) {
+    // Gets all message texts and performs a fetch for each message
+    $('.message-text').each((index, value) => {
+        var message = value.innerText;
+        value.innerText = 'Loading...';
+        const params = new URLSearchParams();
+        params.append('message', message);
+        params.append('languageCode', languageCode);
+
+        fetch('/translate', {
+            method: 'POST',
+            body: params,
+        }).then((response) => response.text()).then((translatedMessage) => {
+            value.innerText = translatedMessage;
+        }); 
+    });
+}
+
+/**
  * Executes when document is loaded
  */
  $(document).ready(function() {
@@ -436,9 +464,16 @@ function drawPokemonDataCharts() {
         });
     });
 
+    // Google Authentication API 
     manageLogin();
 
+    // Google Chart API
     google.charts.load('current', {'packages':['corechart']});
     google.charts.setOnLoadCallback(drawPokemonDataCharts);
+
+    // Google Translation API
+    $('#language-select').change(function() {
+        translateComments($(this).val());
+    });
     
  });
