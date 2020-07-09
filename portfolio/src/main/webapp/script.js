@@ -385,6 +385,11 @@ function translateComments(languageCode) {
  */
  $(document).ready(function() {
 
+     // Animates scroll behavior only when navigating within page
+     $('.scroll').click(function() {
+         $('html').css('scroll-behavior', 'smooth');
+     });
+
      // Animates the picture slideshow
      $('#slideshow > div:gt(0)').hide();
      setInterval(function() {
