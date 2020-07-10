@@ -132,6 +132,25 @@ class TxtRotate {
     }
 }
 
+function setCookie(cname, cvalue) {
+  document.cookie = cname + '=' + cvalue;
+}
+
+function getCookie(cname) {
+  var name = cname + "=";
+  var ca = document.cookie.split(';');
+  for(var i = 0; i < ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return '';
+}
+
 /**
  * Begins typewriter animation for each 'txt-rotate' class tag
  */
@@ -190,10 +209,13 @@ function loadComments(query, currentLanguage) {
         var languageCode = urlParams.get('hl');
 
         // The priority of language use is:
-        //   1. Front end change via GET request, which uses the currentLanguage param
-        //   2. Back end change via POST request, which uses the URL query
-        //   3. Default language (English) if language codes are invalid
-        if ($('#language-select option[value="' + currentLanguage + '"]').index() >= 0) {
+        //   1. Currently stored cookie
+        //   2. Front end change via GET request, which uses the currentLanguage param
+        //   3. Back end change via POST request, which uses the URL query
+        //   4. Default language (English) if language codes are invalid
+        if (getCookie('hl') != '') {
+            languageCode = getCookie('hl');
+        } else if ($('#language-select option[value="' + currentLanguage + '"]').index() >= 0) {
             languageCode = currentLanguage;
         } 
         var languageCodeIndex = $('#language-select option[value="' + languageCode + '"]').index();
@@ -219,6 +241,7 @@ function validateCommentForm() {
         return false;
     }
     document.forms['comment-form']['language-code'].value = $('#language-select').val();
+    setCookie('hl', $('#language-select').val());
 
     // Escapes HTML characters before submitting
     document.forms['comment-form']['message'].value = escapeHtml(message);
@@ -245,6 +268,7 @@ function validateNameForm() {
     } 
     document.forms['display-form']['name'].value = $.trim(name);
     document.forms['display-form']['language-code'].value = $('#language-select').val();
+    setCookie('hl', $('#language-select').val());
     return true;
 }
 
@@ -388,6 +412,7 @@ function translateComments(languageCode) {
         const params = new URLSearchParams();
         params.append('message', message);
         params.append('languageCode', languageCode);
+        params.append('mock', 'mock');
 
         fetch('/translate', {
             method: 'POST',
@@ -460,6 +485,7 @@ function translateComments(languageCode) {
 
     // Loads comments based on the limit passed
     $('#comment-limit-button').click(function() {
+        setCookie('hl', $('#language-select').val());
         loadComments($('#comment-limit-input').val(), $('#language-select').val());
     });
 
@@ -496,6 +522,7 @@ function translateComments(languageCode) {
 
     // Google Translation API
     $('#language-select').change(function() {
+        setCookie('hl', $(this).val());
         translateComments($(this).val());
     });
     
