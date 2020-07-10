@@ -45,7 +45,12 @@ public class UserDataServlet extends HttpServlet {
     private static final String DATASTORE_USER_DATA_NAME_PARAM = "displayName";
     private static final String DATASTORE_USER_DATA_EMAIL_PARAM = "email"; 
     private static final String REQUEST_NAME_PARAM = "name";
-    private static final String REDIRECT_URL = "/#comments";
+    private static final String REQUEST_LANGUAGE_CODE_PARAM = "language-code";
+    private static final String REDIRECT_URL_PATH = "/";
+    private static final String REDIRECT_URL_QUERY = "?";
+    private static final String REDIRECT_URL_QUERY_LANGUAGE_PARAM = "hl=";
+    private static final String REDIRECT_URL_FRAGMENT = "#comments";
+    private static String LANGUAGE_CODES_ARRAY[] = {"en", "zh", "es", "hi", "ar"};
 
     /**
      * Gets the potential display name of the current user
@@ -91,13 +96,22 @@ public class UserDataServlet extends HttpServlet {
         // Breaks from method if the user is not logged in
         UserService userService = UserServiceFactory.getUserService();
         if (!userService.isUserLoggedIn()) {
-            response.sendRedirect(REDIRECT_URL);
+            response.sendRedirect(REDIRECT_URL_PATH);
             return;
         }
 
+        // Gets necessary data from request and UserService
         String id = userService.getCurrentUser().getUserId();
         String email = userService.getCurrentUser().getEmail();
         String displayName = request.getParameter(REQUEST_NAME_PARAM);
+        String languageCode = request.getParameter(REQUEST_LANGUAGE_CODE_PARAM);
+
+        // Builds redirect URL based on whether the request langauge code is valid
+        String redirectURL = REDIRECT_URL_PATH;
+        if (languageCode != null && Arrays.asList(LANGUAGE_CODES_ARRAY).indexOf(languageCode) >= 0) {
+            redirectURL += REDIRECT_URL_QUERY + REDIRECT_URL_QUERY_LANGUAGE_PARAM + languageCode;
+        }
+        redirectURL += REDIRECT_URL_FRAGMENT;
 
         // Sets the display name of the current user and stores it in the database
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -107,6 +121,6 @@ public class UserDataServlet extends HttpServlet {
         entity.setProperty(DATASTORE_USER_DATA_EMAIL_PARAM, email);
         datastore.put(entity);
 
-        response.sendRedirect(REDIRECT_URL);
+        response.sendRedirect(redirectURL);
     }
 }
