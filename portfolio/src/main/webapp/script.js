@@ -185,12 +185,17 @@ function loadComments(query, currentLanguage) {
         display += '</table>';
         $('#comments-scroll').html(display);
         
+        // Grabs the host language from the URL query
         const urlParams = new URLSearchParams(window.location.search);
         var languageCode = urlParams.get('hl');
+
+        // The priority of language use is:
+        //   1. Front end change via GET request, which uses the currentLanguage param
+        //   2. Back end change via POST request, which uses the URL query
+        //   3. Default language (English) if language codes are invalid
         if ($('#language-select option[value="' + currentLanguage + '"]').index() >= 0) {
             languageCode = currentLanguage;
         } 
-
         var languageCodeIndex = $('#language-select option[value="' + languageCode + '"]').index();
         if (languageCodeIndex >= 0) {
             $('#language-select')[0].selectedIndex = languageCodeIndex;
