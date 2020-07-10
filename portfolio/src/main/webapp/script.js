@@ -383,7 +383,6 @@ function translateComments(languageCode) {
         const params = new URLSearchParams();
         params.append('message', message);
         params.append('languageCode', languageCode);
-        params.append('mock', 'mock');
 
         fetch('/translate', {
             method: 'POST',
