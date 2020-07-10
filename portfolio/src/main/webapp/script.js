@@ -166,8 +166,9 @@ function startTypewriterAnimation() {
 /**
  * Loads comments from database, with option to specify the maximum loaded comments
  * @param {string} query The number of comments that should be fetched
+ * @param {string} currentLanguage The language code to use
  */
-function loadComments(query) {
+function loadComments(query, currentLanguage) {
     // Creates the fetch URL with specified maximum limit of comments
     var fetchURL = '/data';
     fetchURL = (hasOnlyDigits(query)) ? fetchURL + '?limit=' + query : fetchURL;
@@ -184,10 +185,20 @@ function loadComments(query) {
         display += '</table>';
         $('#comments-scroll').html(display);
         
+        const urlParams = new URLSearchParams(window.location.search);
+        var languageCode = urlParams.get('hl');
+        if ($('#language-select option[value="' + currentLanguage + '"]').index() >= 0) {
+            languageCode = currentLanguage;
+        } 
+
+        var languageCodeIndex = $('#language-select option[value="' + languageCode + '"]').index();
+        if (languageCodeIndex >= 0) {
+            $('#language-select')[0].selectedIndex = languageCodeIndex;
+        }
+        
         // Continues to use current language code selection
-        var currentLanguageCode = $('#language-select').val();
-        if (currentLanguageCode != 'en') {
-            translateComments(currentLanguageCode);
+        if ($('#language-select').val() != 'en') {
+            translateComments($('#language-select').val());
         }
     });
 }
@@ -202,9 +213,10 @@ function validateCommentForm() {
         alert("Message field must be filled out");
         return false;
     }
+    document.forms['comment-form']['language-code'].value = $('#language-select').val();
 
     // Escapes HTML characters before submitting
-    //document.forms['comment-form']['message'].value = escapeHtml(message);
+    document.forms['comment-form']['message'].value = escapeHtml(message);
     return true;
 }
 
@@ -227,6 +239,7 @@ function validateNameForm() {
         return false;
     } 
     document.forms['display-form']['name'].value = $.trim(name);
+    document.forms['display-form']['language-code'].value = $('#language-select').val();
     return true;
 }
 
@@ -370,6 +383,7 @@ function translateComments(languageCode) {
         const params = new URLSearchParams();
         params.append('message', message);
         params.append('languageCode', languageCode);
+        params.append('mock', 'mock');
 
         fetch('/translate', {
             method: 'POST',
@@ -404,7 +418,7 @@ function translateComments(languageCode) {
     // Animates the typing animation
     window.onload = function() {
         startTypewriterAnimation();
-        loadComments('');
+        loadComments('', '');
     };
 
     // Opens modal for extra descriptions for of work and projects
@@ -442,7 +456,7 @@ function translateComments(languageCode) {
 
     // Loads comments based on the limit passed
     $('#comment-limit-button').click(function() {
-        loadComments($('#comment-limit-input').val());
+        loadComments($('#comment-limit-input').val(), $('#language-select').val());
     });
 
     // Deletes all comments from database

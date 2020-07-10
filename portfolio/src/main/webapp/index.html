@@ -347,12 +347,14 @@
                         <form action="/user-data" name="display-form" onsubmit="return validateNameForm()" method="post">
                             <label for="name">New Display Name: </label>
                             <input type="text" name="name"></input>
+                            <input type="hidden" name="language-code" value="">
                             <input type="submit">
                         </form>
                         <br class="hideable-br">
                         <form action="/data" name="comment-form" onsubmit="return validateCommentForm()" method="post">
                             <label for="message">Please leave a comment:</label><br>
                             <textarea name="message" rows="15"></textarea>
+                            <input type="hidden" name="language-code" value="">
                             <br>
                             <br>
                             <input type="submit">
