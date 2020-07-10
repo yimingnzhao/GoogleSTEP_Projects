@@ -39,6 +39,9 @@ const POKEMON_TYPE_COLORS = [
     '#d0d0e1', '#ffccff'
 ];
 
+const LANGUAGE_CODE_COOKIE_KEY = 'hl';
+const COMMENT_LIMIT_COOKIE_KEY = 'limit';
+
 
 /**
  * Adds a random greeting to the page.
@@ -132,23 +135,38 @@ class TxtRotate {
     }
 }
 
+/**
+ * Sets a cookie with the given name and value parameters
+ * @param {String} cname The name of the cookie to set
+ * @param {String} cvalue The value of the cookie to set
+ */
 function setCookie(cname, cvalue) {
-  document.cookie = cname + '=' + cvalue;
+    document.cookie = cname + '=' + cvalue;
 }
 
+/**
+ * Gets the value of the cookie with the given name parameter
+ * @param {String} cname The name of the cookie to set
+ * @return {String} The value of the cookie or empty string if the name does not exist
+ */
 function getCookie(cname) {
-  var name = cname + "=";
-  var ca = document.cookie.split(';');
-  for(var i = 0; i < ca.length; i++) {
-    var c = ca[i];
-    while (c.charAt(0) == ' ') {
-      c = c.substring(1);
-    }
-    if (c.indexOf(name) == 0) {
-      return c.substring(name.length, c.length);
-    }
-  }
-  return '';
+    // Defines the name substring part of a single cookie
+    var name = cname + "=";
+
+    // Iterates through all cookies and tries to match the name substring
+    var ca = document.cookie.split(';');
+    for(var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    } 
+
+    // Cookie with given name is not found, so returns empty string
+    return '';
 }
 
 /**
@@ -191,6 +209,9 @@ function loadComments(query) {
     var fetchURL = '/data';
     fetchURL = (hasOnlyDigits(query)) ? fetchURL + '?limit=' + query : fetchURL;
 
+    // Sets the comment limit front-end input to match the query
+    $('#comment-limit-input').val(query);
+
     // Gets comment data and injects HTML to display the comments
     fetch(fetchURL).then((response) => response.json()).then((json) => {
         var display = '<table>';
@@ -204,8 +225,8 @@ function loadComments(query) {
         $('#comments-scroll').html(display);
 
         languageCode = 'en';
-        if (getCookie('hl') != '') {
-            languageCode = getCookie('hl');
+        if (getCookie(LANGUAGE_CODE_COOKIE_KEY) != '') {
+            languageCode = getCookie(LANGUAGE_CODE_COOKIE_KEY);
         } 
         var languageCodeIndex = $('#language-select option[value="' + languageCode + '"]').index();
         if (languageCodeIndex >= 0) {
@@ -230,7 +251,10 @@ function validateCommentForm() {
         return false;
     }
     document.forms['comment-form']['language-code'].value = $('#language-select').val();
-    setCookie('hl', $('#language-select').val());
+
+    // Sets cookies to store current user preferences
+    setCookie(LANGUAGE_CODE_COOKIE_KEY, $('#language-select').val());
+    setCookie(COMMENT_LIMIT_COOKIE_KEY, $('#comment-limit-input').val());
 
     // Escapes HTML characters before submitting
     document.forms['comment-form']['message'].value = escapeHtml(message);
@@ -257,7 +281,11 @@ function validateNameForm() {
     } 
     document.forms['display-form']['name'].value = $.trim(name);
     document.forms['display-form']['language-code'].value = $('#language-select').val();
-    setCookie('hl', $('#language-select').val());
+
+    // Sets cookies to store current user preferences
+    setCookie(LANGUAGE_CODE_COOKIE_KEY, $('#language-select').val());
+    setCookie(COMMENT_LIMIT_COOKIE_KEY, $('#comment-limit-input').val());
+
     return true;
 }
 
@@ -401,7 +429,6 @@ function translateComments(languageCode) {
         const params = new URLSearchParams();
         params.append('message', message);
         params.append('languageCode', languageCode);
-        params.append('mock', 'mock');
 
         fetch('/translate', {
             method: 'POST',
@@ -435,8 +462,8 @@ function translateComments(languageCode) {
 
     // Animates the typing animation
     window.onload = function() {
-        startTypewriterAnimation();
-        loadComments('');
+        startTypewriterAnimation(); 
+        loadComments(getCookie(COMMENT_LIMIT_COOKIE_KEY));
     };
 
     // Opens modal for extra descriptions for of work and projects
@@ -474,7 +501,9 @@ function translateComments(languageCode) {
 
     // Loads comments based on the limit passed
     $('#comment-limit-button').click(function() {
-        setCookie('hl', $('#language-select').val());
+        // Sets cookies to store current user preferences
+        setCookie(LANGUAGE_CODE_COOKIE_KEY, $('#language-select').val());
+        setCookie(COMMENT_LIMIT_COOKIE_KEY, $('#comment-limit-input').val());
         loadComments($('#comment-limit-input').val());
     });
 
@@ -511,7 +540,8 @@ function translateComments(languageCode) {
 
     // Google Translation API
     $('#language-select').change(function() {
-        setCookie('hl', $(this).val());
+        // Sets cookies to store current user preferences
+        setCookie(LANGUAGE_CODE_COOKIE_KEY, $(this).val());
         translateComments($(this).val());
     });
     
