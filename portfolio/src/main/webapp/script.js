@@ -185,9 +185,8 @@ function startTypewriterAnimation() {
 /**
  * Loads comments from database, with option to specify the maximum loaded comments
  * @param {string} query The number of comments that should be fetched
- * @param {string} currentLanguage The language code to use
  */
-function loadComments(query, currentLanguage) {
+function loadComments(query) {
     // Creates the fetch URL with specified maximum limit of comments
     var fetchURL = '/data';
     fetchURL = (hasOnlyDigits(query)) ? fetchURL + '?limit=' + query : fetchURL;
@@ -203,20 +202,10 @@ function loadComments(query, currentLanguage) {
         }
         display += '</table>';
         $('#comments-scroll').html(display);
-        
-        // Grabs the host language from the URL query
-        const urlParams = new URLSearchParams(window.location.search);
-        var languageCode = urlParams.get('hl');
 
-        // The priority of language use is:
-        //   1. Currently stored cookie
-        //   2. Front end change via GET request, which uses the currentLanguage param
-        //   3. Back end change via POST request, which uses the URL query
-        //   4. Default language (English) if language codes are invalid
+        languageCode = 'en';
         if (getCookie('hl') != '') {
             languageCode = getCookie('hl');
-        } else if ($('#language-select option[value="' + currentLanguage + '"]').index() >= 0) {
-            languageCode = currentLanguage;
         } 
         var languageCodeIndex = $('#language-select option[value="' + languageCode + '"]').index();
         if (languageCodeIndex >= 0) {
@@ -447,7 +436,7 @@ function translateComments(languageCode) {
     // Animates the typing animation
     window.onload = function() {
         startTypewriterAnimation();
-        loadComments('', '');
+        loadComments('');
     };
 
     // Opens modal for extra descriptions for of work and projects
@@ -486,7 +475,7 @@ function translateComments(languageCode) {
     // Loads comments based on the limit passed
     $('#comment-limit-button').click(function() {
         setCookie('hl', $('#language-select').val());
-        loadComments($('#comment-limit-input').val(), $('#language-select').val());
+        loadComments($('#comment-limit-input').val());
     });
 
     // Deletes all comments from database
