@@ -42,7 +42,6 @@ public class DataServlet extends HttpServlet {
     private static final String RESPONSE_JSON_CONTENT = "application/json;";
     private static final String REQUEST_COMMENT_LIMIT_PARAM = "limit";
     private static final String REQUEST_MESSAGE_PARAM = "message";
-    private static final String REQUEST_LANGUAGE_CODE_PARAM = "language-code";
     private static final String DATASTORE_COMMENT_KIND = "Comment";
     private static final String DATASTORE_COMMENT_MESSAGE_PARAM = "message";
     private static final String DATASTORE_COMMENT_TIMESTAMP_PARAM = "timestamp";
@@ -51,10 +50,7 @@ public class DataServlet extends HttpServlet {
     private static final String DATASTORE_USER_DATA_ID_PARAM = "id";
     private static final String DATASTORE_USER_DATA_NAME_PARAM = "displayName";
     private static final String REDIRECT_URL_PATH = "/";
-    private static final String REDIRECT_URL_QUERY = "?";
-    private static final String REDIRECT_URL_QUERY_LANGUAGE_PARAM = "hl=";
     private static final String REDIRECT_URL_FRAGMENT = "#comments";
-    private static String LANGUAGE_CODES_ARRAY[] = {"en", "zh", "es", "hi", "ar"};
 
 
 
@@ -130,15 +126,10 @@ public class DataServlet extends HttpServlet {
         String userId = userService.getCurrentUser().getUserId();
         String userEmail = userService.getCurrentUser().getEmail();
         String message = request.getParameter(REQUEST_MESSAGE_PARAM);
-        String languageCode = request.getParameter(REQUEST_LANGUAGE_CODE_PARAM);
         long timestamp = System.currentTimeMillis();
 
-        // Builds redirect URL based on whether the request language code is valid
-        String redirectURL = REDIRECT_URL_PATH;
-        if (languageCode != null && Arrays.asList(LANGUAGE_CODES_ARRAY).indexOf(languageCode) >= 0) {
-            redirectURL += REDIRECT_URL_QUERY + REDIRECT_URL_QUERY_LANGUAGE_PARAM + languageCode;
-        }
-        redirectURL += REDIRECT_URL_FRAGMENT;
+        // Builds redirect URL
+        String redirectURL = REDIRECT_URL_PATH + REDIRECT_URL_FRAGMENT;
 
         // Creates database entry Entity and populates its parameters
         Entity commentEntity = new Entity(DATASTORE_COMMENT_KIND);

@@ -39,6 +39,9 @@ const POKEMON_TYPE_COLORS = [
     '#d0d0e1', '#ffccff'
 ];
 
+const LANGUAGE_CODE_COOKIE_KEY = 'hl';
+const COMMENT_LIMIT_COOKIE_KEY = 'limit';
+
 
 /**
  * Adds a random greeting to the page.
@@ -133,6 +136,40 @@ class TxtRotate {
 }
 
 /**
+ * Sets a cookie with the given name and value parameters
+ * @param {String} cname The name of the cookie to set
+ * @param {String} cvalue The value of the cookie to set
+ */
+function setCookie(cname, cvalue) {
+    document.cookie = cname + '=' + cvalue;
+}
+
+/**
+ * Gets the value of the cookie with the given name parameter
+ * @param {String} cname The name of the cookie to set
+ * @return {String} The value of the cookie or empty string if the name does not exist
+ */
+function getCookie(cname) {
+    // Defines the name substring part of a single cookie
+    var name = cname + "=";
+
+    // Iterates through all cookies and tries to match the name substring
+    var ca = document.cookie.split(';');
+    for(var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    } 
+
+    // Cookie with given name is not found, so returns empty string
+    return '';
+}
+
+/**
  * Begins typewriter animation for each 'txt-rotate' class tag
  */
 function startTypewriterAnimation() {
@@ -166,12 +203,14 @@ function startTypewriterAnimation() {
 /**
  * Loads comments from database, with option to specify the maximum loaded comments
  * @param {string} query The number of comments that should be fetched
- * @param {string} currentLanguage The language code to use
  */
-function loadComments(query, currentLanguage) {
+function loadComments(query) {
     // Creates the fetch URL with specified maximum limit of comments
     var fetchURL = '/data';
     fetchURL = (hasOnlyDigits(query)) ? fetchURL + '?limit=' + query : fetchURL;
+
+    // Sets the comment limit front-end input to match the query
+    $('#comment-limit-input').val(query);
 
     // Gets comment data and injects HTML to display the comments
     fetch(fetchURL).then((response) => response.json()).then((json) => {
@@ -184,17 +223,10 @@ function loadComments(query, currentLanguage) {
         }
         display += '</table>';
         $('#comments-scroll').html(display);
-        
-        // Grabs the host language from the URL query
-        const urlParams = new URLSearchParams(window.location.search);
-        var languageCode = urlParams.get('hl');
 
-        // The priority of language use is:
-        //   1. Front end change via GET request, which uses the currentLanguage param
-        //   2. Back end change via POST request, which uses the URL query
-        //   3. Default language (English) if language codes are invalid
-        if ($('#language-select option[value="' + currentLanguage + '"]').index() >= 0) {
-            languageCode = currentLanguage;
+        languageCode = 'en';
+        if (getCookie(LANGUAGE_CODE_COOKIE_KEY) != '') {
+            languageCode = getCookie(LANGUAGE_CODE_COOKIE_KEY);
         } 
         var languageCodeIndex = $('#language-select option[value="' + languageCode + '"]').index();
         if (languageCodeIndex >= 0) {
@@ -219,6 +251,10 @@ function validateCommentForm() {
         return false;
     }
     document.forms['comment-form']['language-code'].value = $('#language-select').val();
+
+    // Sets cookies to store current user preferences
+    setCookie(LANGUAGE_CODE_COOKIE_KEY, $('#language-select').val());
+    setCookie(COMMENT_LIMIT_COOKIE_KEY, $('#comment-limit-input').val());
 
     // Escapes HTML characters before submitting
     document.forms['comment-form']['message'].value = escapeHtml(message);
@@ -245,6 +281,11 @@ function validateNameForm() {
     } 
     document.forms['display-form']['name'].value = $.trim(name);
     document.forms['display-form']['language-code'].value = $('#language-select').val();
+
+    // Sets cookies to store current user preferences
+    setCookie(LANGUAGE_CODE_COOKIE_KEY, $('#language-select').val());
+    setCookie(COMMENT_LIMIT_COOKIE_KEY, $('#comment-limit-input').val());
+
     return true;
 }
 
@@ -421,8 +462,8 @@ function translateComments(languageCode) {
 
     // Animates the typing animation
     window.onload = function() {
-        startTypewriterAnimation();
-        loadComments('', '');
+        startTypewriterAnimation(); 
+        loadComments(getCookie(COMMENT_LIMIT_COOKIE_KEY));
     };
 
     // Opens modal for extra descriptions for of work and projects
@@ -460,7 +501,10 @@ function translateComments(languageCode) {
 
     // Loads comments based on the limit passed
     $('#comment-limit-button').click(function() {
-        loadComments($('#comment-limit-input').val(), $('#language-select').val());
+        // Sets cookies to store current user preferences
+        setCookie(LANGUAGE_CODE_COOKIE_KEY, $('#language-select').val());
+        setCookie(COMMENT_LIMIT_COOKIE_KEY, $('#comment-limit-input').val());
+        loadComments($('#comment-limit-input').val());
     });
 
     // Deletes all comments from database
@@ -496,6 +540,8 @@ function translateComments(languageCode) {
 
     // Google Translation API
     $('#language-select').change(function() {
+        // Sets cookies to store current user preferences
+        setCookie(LANGUAGE_CODE_COOKIE_KEY, $(this).val());
         translateComments($(this).val());
     });
     
