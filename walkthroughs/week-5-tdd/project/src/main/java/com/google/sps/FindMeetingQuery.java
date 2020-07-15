@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.*;
 
 public final class FindMeetingQuery {
 
@@ -46,12 +47,12 @@ public final class FindMeetingQuery {
     Collection<TimeRange> rangesWithoutOptional = queryAllAttendees(events, request, attendeesWithoutOptional);
 
     // Use optional time ranges if there are no mandatory attendees
-    if (request.getAttendees().size() == 0) {
+    if (request.getAttendees().isEmpty()) {
       return rangesWithOptional;
     }
 
     // Else, only use the optional time ranges if there exists an optional time range
-    return (rangesWithOptional.size() > 0) ? rangesWithOptional : rangesWithoutOptional;
+    return (rangesWithOptional.isEmpty()) ? rangesWithoutOptional : rangesWithOptional;
   }
 
   /**
@@ -70,13 +71,7 @@ public final class FindMeetingQuery {
     // Finds the set of events that block time ranges for being a valid meeting time
     for (Event event : events) {
       Set<String> eventAttendees = event.getAttendees();
-      boolean isBlocked = false;
-      for (String attendee : eventAttendees) {
-        if (requestAttendees.contains(attendee)) {
-          isBlocked = true;
-          break;
-        }
-      }
+      boolean isBlocked = eventAttendees.stream().anyMatch(attendee -> requestAttendees.contains(attendee));
       if (isBlocked) {
         blockedTimes.add(event.getWhen());
       }
